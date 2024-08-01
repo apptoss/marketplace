@@ -4,8 +4,11 @@ version = "1.0.0"
 authors = []
 
 [addresses]
+apptoss = "_"
 
+# For use when developing and testing this module
 [dev-addresses]
+apptoss = "0x100"
 
 [dependencies.AptosFramework]
 git = "https://github.com/aptos-labs/aptos-core.git"
