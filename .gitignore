@@ -23,6 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
-# aptos
+# Aptos
 .aptos
 **/move/build
+contract_address.txt
+
+# Environments
+.env*
+!.env.example
