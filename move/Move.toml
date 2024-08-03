@@ -8,7 +8,7 @@ apptoss = "_"
 
 # For use when developing and testing this module
 [dev-addresses]
-apptoss = "0x100"
+apptoss = "0x1337"
 
 [dependencies.AptosFramework]
 git = "https://github.com/aptos-labs/aptos-core.git"
