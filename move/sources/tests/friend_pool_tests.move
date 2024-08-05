@@ -9,8 +9,8 @@ module apptoss::friend_pool_tests {
     use aptos_framework::primary_fungible_store;
     use aptos_framework::signer;
 
-    #[test(origin = @0xcafe)]
-    fun test(origin: &signer) {
+    #[test(origin = @0xcafe, player = @0xdeed)]
+    fun test(origin: &signer, player: &signer) {
         // setup init_module
         package_manager::initialize_for_test(&account::create_signer_for_test(@apptoss));
 
@@ -27,6 +27,11 @@ module apptoss::friend_pool_tests {
         assert!(primary_fungible_store::balance(pool_address, metadata) == 9999999, 1);
         primary_fungible_store::deposit(pool_address, reward);
         assert!(primary_fungible_store::balance(pool_address, metadata) == 10000000, 1);
+
+        let player_address = signer::address_of(player);
+        friend_pool::credit(origin_address, metadata, 1111, player_address);
+        let credited = friend_pool::get_credit(origin_address, metadata, player_address);
+        assert!(credited == 1111, 1);
     }
 
     public fun create_assets(creator: &signer): (FungibleAsset) {

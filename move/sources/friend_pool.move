@@ -7,12 +7,14 @@ module apptoss::friend_pool {
     use aptos_framework::primary_fungible_store;
     use aptos_framework::object::{Self, Object, ExtendRef};
     use aptos_framework::signer;
+    use aptos_std::smart_table::{Self, SmartTable};
 
     use std::bcs;
     use std::vector;
 
     struct FriendPool has key {
-        extend_ref: ExtendRef
+        extend_ref: ExtendRef,
+        credits: SmartTable<address, u64>, // TODO choose the appropriate size of amounts
     }
     
     /// Create a new friend pool.
@@ -29,7 +31,8 @@ module apptoss::friend_pool {
         move_to(
             &object_signer,
             FriendPool {
-                extend_ref: object::generate_extend_ref(&constructor_ref)
+                extend_ref: object::generate_extend_ref(&constructor_ref),
+                credits: smart_table::new(),
             }
         );
         object_address
@@ -62,6 +65,20 @@ module apptoss::friend_pool {
         let pool_signer = &object::generate_signer_for_extending(&pool.extend_ref);
         let fa = primary_fungible_store::withdraw(pool_signer, metadata, amount);
         fa
+    }
+
+    /// Credit virtual funds to an account.
+    public(friend) fun credit(origin: address, metadata: Object<Metadata>, amount: u64, destination: address) acquires FriendPool {
+        let pool = borrow_global_mut<FriendPool>(get_pool_address(origin, metadata));
+        let last_credit = *smart_table::borrow_with_default(&pool.credits, destination, &0);
+        last_credit = last_credit + amount;
+        smart_table::upsert(&mut pool.credits, destination, last_credit);
+    }
+
+    #[view]
+    public fun get_credit(origin: address, metadata: Object<Metadata>, destination: address): u64 acquires FriendPool {
+        let pool = borrow_global<FriendPool>(get_pool_address(origin, metadata));
+        *smart_table::borrow_with_default(&pool.credits, destination, &0)
     }
 
     /*
