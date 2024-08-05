@@ -1,10 +1,10 @@
 #[test_only]
 module apptoss::friend_pool_tests {
-    use aptos_framework::account;
     use apptoss::friend_pool;
     use apptoss::package_manager;
     use apptoss::test_helpers;
     
+    use aptos_framework::account;
     use aptos_framework::fungible_asset::{Self, FungibleAsset};
     use aptos_framework::primary_fungible_store;
     use aptos_framework::signer;
@@ -19,8 +19,13 @@ module apptoss::friend_pool_tests {
         let metadata = fungible_asset::metadata_from_asset(&tokens_1);
 
         let pool_address = friend_pool::create(origin, metadata);
-        primary_fungible_store::deposit(pool_address, tokens_1);
+        friend_pool::hold(origin_address, tokens_1);
         assert!(primary_fungible_store::balance(origin_address, metadata) == 0, 0);
+        assert!(primary_fungible_store::balance(pool_address, metadata) == 10000000, 1);
+
+        let reward = friend_pool::hand(origin_address, metadata, 1);
+        assert!(primary_fungible_store::balance(pool_address, metadata) == 9999999, 1);
+        primary_fungible_store::deposit(pool_address, reward);
         assert!(primary_fungible_store::balance(pool_address, metadata) == 10000000, 1);
     }
 

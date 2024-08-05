@@ -3,23 +3,35 @@
 module apptoss::friend_pool {
     use apptoss::package_manager;
     
-    use aptos_framework::fungible_asset::{Metadata};
+    use aptos_framework::fungible_asset::{Self, Metadata, FungibleAsset};
     use aptos_framework::primary_fungible_store;
-    use aptos_framework::object::{Self, Object};
+    use aptos_framework::object::{Self, Object, ExtendRef};
     use aptos_framework::signer;
 
     use std::bcs;
     use std::vector;
+
+    struct FriendPool has key {
+        extend_ref: ExtendRef
+    }
     
     /// Create a new friend pool.
     public fun create(origin: &signer, metadata: Object<Metadata>): address {
         let origin_address = signer::address_of(origin);
+        
         let constructor_ref = object::create_named_object(
             &package_manager::get_signer(),
             get_pool_seed(origin_address, metadata));
+        let object_address = object::address_from_constructor_ref(&constructor_ref);
+        
         let object_signer = object::generate_signer(&constructor_ref);
-        let object_address = signer::address_of(&object_signer);
         primary_fungible_store::ensure_primary_store_exists(object_address, metadata);
+        move_to(
+            &object_signer,
+            FriendPool {
+                extend_ref: object::generate_extend_ref(&constructor_ref)
+            }
+        );
         object_address
     }
 
@@ -29,4 +41,33 @@ module apptoss::friend_pool {
         vector::append(&mut seed, bcs::to_bytes(&object::object_address(&metadata)));
         seed
     }
+
+    /// Hold assets in the friend pool.
+    public(friend) fun hold(origin: address, asset: FungibleAsset) {
+        let to_pool = get_pool_address(origin, fungible_asset::asset_metadata(&asset));
+        // deliver disbursements (cash flow management)
+        primary_fungible_store::deposit(to_pool, asset);
+    }
+
+    #[view]
+    public fun get_pool_address(origin: address, metadata: Object<Metadata>): address {
+        let signer = &package_manager::get_signer();
+        let signer_address = signer::address_of(signer);
+        object::create_object_address(&signer_address, get_pool_seed(origin, metadata))
+    }
+
+    /// Hand assets out of the friend pool.
+    public(friend) fun hand(origin: address, metadata: Object<Metadata>, amount: u64): FungibleAsset acquires FriendPool {
+        let pool = borrow_global_mut<FriendPool>(get_pool_address(origin, metadata));
+        let pool_signer = &object::generate_signer_for_extending(&pool.extend_ref);
+        let fa = primary_fungible_store::withdraw(pool_signer, metadata, amount);
+        fa
+    }
+
+    /*
+     * Testify
+     */
+
+    #[test_only]
+    friend apptoss::friend_pool_tests;
 }
