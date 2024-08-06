@@ -78,6 +78,19 @@ module apptoss::friend_pool {
         smart_table::upsert(&mut pool.credits, destination, last_credit);
     }
 
+    public entry fun realize(redeemer: &signer, origin: address, metadata: Object<Metadata>, amount: u64) acquires FriendPool {
+        let redeemer_address = signer::address_of(redeemer);
+        let pool = borrow_global_mut<FriendPool>(get_pool_address(origin, metadata));
+        
+        let last_credit = *smart_table::borrow(&pool.credits, redeemer_address);
+        assert!(last_credit >= amount, 0);
+        last_credit = last_credit - amount;
+        smart_table::upsert(&mut pool.credits, redeemer_address, last_credit);
+
+        let pool_signer = &object::generate_signer_for_extending(&pool.extend_ref);
+        primary_fungible_store::transfer(pool_signer, metadata, redeemer_address, amount);
+    }
+
     #[view]
     public fun get_credit(origin: address, metadata: Object<Metadata>, destination: address): u64 acquires FriendPool {
         let pool = borrow_global<FriendPool>(get_pool_address(origin, metadata));

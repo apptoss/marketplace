@@ -9,7 +9,10 @@ module apptoss::friend_pool_tests {
     use aptos_framework::primary_fungible_store;
     use aptos_framework::signer;
 
-    #[test(origin = @0xcafe, player = @0xdeed)]
+    #[test(
+        player = @0xc4fe,
+        origin = @0xd2,
+    )]
     fun test(origin: &signer, player: &signer) {
         // init_module equivalent
         package_manager::initialize_for_test(&account::create_signer_for_test(@apptoss));
@@ -21,21 +24,28 @@ module apptoss::friend_pool_tests {
         let pool_address = friend_pool::create(origin, metadata);
         friend_pool::hold(origin_address, tokens_1);
         assert!(primary_fungible_store::balance(origin_address, metadata) == 0, 0);
-        assert!(primary_fungible_store::balance(pool_address, metadata) == 10000000, 1);
+        assert!(primary_fungible_store::balance(pool_address, metadata) == 10_000_000, 1);
 
         let reward = friend_pool::hand(origin_address, metadata, 1);
-        assert!(primary_fungible_store::balance(pool_address, metadata) == 9999999, 1);
+        assert!(primary_fungible_store::balance(pool_address, metadata) == 9_999_999, 1);
         primary_fungible_store::deposit(pool_address, reward);
-        assert!(primary_fungible_store::balance(pool_address, metadata) == 10000000, 1);
+        assert!(primary_fungible_store::balance(pool_address, metadata) == 10_000_000, 1);
 
         let player_address = signer::address_of(player);
         friend_pool::credit(origin_address, metadata, 1111, player_address);
         let credited = friend_pool::get_credit(origin_address, metadata, player_address);
         assert!(credited == 1111, 1);
+
+        assert!(primary_fungible_store::balance(player_address, metadata) == 0, 1);
+        friend_pool::realize(player, origin_address, metadata, 11);
+        assert!(primary_fungible_store::balance(player_address, metadata) == 11, 1);
+        let credited = friend_pool::get_credit(origin_address, metadata, player_address);
+        assert!(credited == 1100, 1);
+        assert!(primary_fungible_store::balance(pool_address, metadata) == 9_999_989, 1);
     }
 
     public fun create_assets(creator: &signer): (FungibleAsset) {
-        let tokens_1 = test_helpers::create_fungible_asset_and_mint(creator, b"test1", 10000000);
+        let tokens_1 = test_helpers::create_fungible_asset_and_mint(creator, b"test1", 10_000_000);
         (tokens_1)
     }
 }
