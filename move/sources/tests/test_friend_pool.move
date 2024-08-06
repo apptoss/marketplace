@@ -11,7 +11,7 @@ module apptoss::friend_pool_tests {
 
     #[test(origin = @0xcafe, player = @0xdeed)]
     fun test(origin: &signer, player: &signer) {
-        // setup init_module
+        // init_module equivalent
         package_manager::initialize_for_test(&account::create_signer_for_test(@apptoss));
 
         let origin_address = signer::address_of(origin);
