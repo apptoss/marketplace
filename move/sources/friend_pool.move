@@ -12,6 +12,16 @@ module apptoss::friend_pool {
     use std::bcs;
     use std::vector;
 
+    /*
+     * A list of friends.
+     */
+
+    friend apptoss::coinflip;
+
+    /*
+     * Implementation.
+     */
+
     struct FriendPool has key {
         extend_ref: ExtendRef,
         credits: SmartTable<address, u64>, // TODO choose the appropriate size of amounts
@@ -52,13 +62,6 @@ module apptoss::friend_pool {
         primary_fungible_store::deposit(to_pool, asset);
     }
 
-    #[view]
-    public fun get_pool_address(origin: address, metadata: Object<Metadata>): address {
-        let signer = &package_manager::get_signer();
-        let signer_address = signer::address_of(signer);
-        object::create_object_address(&signer_address, get_pool_seed(origin, metadata))
-    }
-
     /// Hand assets out of the friend pool.
     public(friend) fun hand(origin: address, metadata: Object<Metadata>, amount: u64): FungibleAsset acquires FriendPool {
         let pool = borrow_global_mut<FriendPool>(get_pool_address(origin, metadata));
@@ -79,6 +82,13 @@ module apptoss::friend_pool {
     public fun get_credit(origin: address, metadata: Object<Metadata>, destination: address): u64 acquires FriendPool {
         let pool = borrow_global<FriendPool>(get_pool_address(origin, metadata));
         *smart_table::borrow_with_default(&pool.credits, destination, &0)
+    }
+
+    #[view]
+    public fun get_pool_address(origin: address, metadata: Object<Metadata>): address {
+        let signer = &package_manager::get_signer();
+        let signer_address = signer::address_of(signer);
+        object::create_object_address(&signer_address, get_pool_seed(origin, metadata))
     }
 
     /*
