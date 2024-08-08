@@ -6,6 +6,13 @@
     },
     {
       "path": "./tsconfig.node.json"
+    },
+  ],
+  "compilerOptions": {
+    /* Resolve paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./dapp/*"]
     }
-  ]
+  }
 }
