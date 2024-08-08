@@ -28,7 +28,7 @@ module apptoss::friend_pool {
     }
     
     /// Create a new friend pool.
-    public fun create(origin: &signer, metadata: Object<Metadata>): address {
+    public entry fun create(origin: &signer, metadata: Object<Metadata>) {
         let origin_address = signer::address_of(origin);
         
         let constructor_ref = object::create_named_object(
@@ -45,7 +45,6 @@ module apptoss::friend_pool {
                 credits: smart_table::new(),
             }
         );
-        object_address
     }
 
     inline fun get_pool_seed(origin: address, metadata: Object<Metadata>): vector<u8> {

@@ -79,7 +79,7 @@ module apptoss::coinflip {
         coin::destroy_mint_cap(mint_cap);
 
         // Setup a friend pool before play
-        let _pool_address = friend_pool::create(origin, metadata);
+        friend_pool::create(origin, metadata);
         
         // Deposit APT to the player
         let player_address = signer::address_of(player);

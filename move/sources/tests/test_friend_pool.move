@@ -21,7 +21,8 @@ module apptoss::friend_pool_tests {
         let tokens_1 = create_assets(origin);
         let metadata = fungible_asset::metadata_from_asset(&tokens_1);
 
-        let pool_address = friend_pool::create(origin, metadata);
+        friend_pool::create(origin, metadata);
+        let pool_address = friend_pool::get_pool_address(origin_address, metadata);
         friend_pool::hold(origin_address, tokens_1);
         assert!(primary_fungible_store::balance(origin_address, metadata) == 0, 0);
         assert!(primary_fungible_store::balance(pool_address, metadata) == 10_000_000, 1);
