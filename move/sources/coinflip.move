@@ -73,14 +73,13 @@ module apptoss::coinflip {
         // Mint APT
         let (burn_cap, mint_cap) = aptos_coin::initialize_for_test(fx);
         let coin = coin::mint<AptosCoin>(1000000, &mint_cap);
-        let metadata = option::extract(&mut coin::paired_metadata<AptosCoin>());
 
         coin::destroy_burn_cap(burn_cap);
         coin::destroy_mint_cap(mint_cap);
 
         // Setup a friend pool before play
-        friend_pool::create(origin, metadata);
-        
+        friend_pool::create_pool_coin<AptosCoin>(origin);
+
         // Deposit APT to the player
         let player_address = signer::address_of(player);
         aptos_account::deposit_coins(player_address, coin);
@@ -91,5 +90,12 @@ module apptoss::coinflip {
         randomness::initialize_for_testing(fx);
         let origin_address = signer::address_of(origin);
         place_coin<AptosCoin>(player, origin_address, true, 1337);
+    }
+
+    #[test_only]
+    fun test_create_pool(origin: &signer) {
+        // Or create a pool with a paired metadata
+        let metadata = option::extract(&mut coin::paired_metadata<AptosCoin>());
+        friend_pool::create_pool(origin, metadata);
     }
 }

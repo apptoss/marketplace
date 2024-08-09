@@ -2,7 +2,8 @@
 /// Why name it friend pool? Because the design based on Moves' Friends!
 module apptoss::friend_pool {
     use apptoss::package_manager;
-    
+
+    use aptos_framework::coin;
     use aptos_framework::fungible_asset::{Self, Metadata, FungibleAsset};
     use aptos_framework::primary_fungible_store;
     use aptos_framework::object::{Self, Object, ExtendRef};
@@ -10,6 +11,7 @@ module apptoss::friend_pool {
     use aptos_std::smart_table::{Self, SmartTable};
 
     use std::bcs;
+    use std::option;
     use std::vector;
 
     /*
@@ -28,7 +30,7 @@ module apptoss::friend_pool {
     }
     
     /// Create a new friend pool.
-    public entry fun create(origin: &signer, metadata: Object<Metadata>) {
+    public entry fun create_pool(origin: &signer, metadata: Object<Metadata>) {
         let origin_address = signer::address_of(origin);
         
         let constructor_ref = object::create_named_object(
@@ -45,6 +47,11 @@ module apptoss::friend_pool {
                 credits: smart_table::new(),
             }
         );
+    }
+
+    public entry fun create_pool_coin<CoinType>(origin: &signer) {
+        let metadata = option::extract(&mut coin::paired_metadata<CoinType>());
+        create_pool(origin, metadata);
     }
 
     inline fun get_pool_seed(origin: address, metadata: Object<Metadata>): vector<u8> {
@@ -98,6 +105,14 @@ module apptoss::friend_pool {
 
     #[view]
     public fun get_pool_address(origin: address, metadata: Object<Metadata>): address {
+        let signer = &package_manager::get_signer();
+        let signer_address = signer::address_of(signer);
+        object::create_object_address(&signer_address, get_pool_seed(origin, metadata))
+    }
+
+    #[view]
+    public fun get_pool_address_coin<CoinType>(origin: address): address {
+        let metadata = option::extract(&mut coin::paired_metadata<CoinType>());
         let signer = &package_manager::get_signer();
         let signer_address = signer::address_of(signer);
         object::create_object_address(&signer_address, get_pool_seed(origin, metadata))
