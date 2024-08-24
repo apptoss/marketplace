@@ -1,5 +1,6 @@
 import { WalletSelector } from '@/components/wallet-selector'
 import { Balance } from './components/balance'
+import { CreatePool } from './components/create-pool'
 import { FortyTwo } from './games/coinflip/forty_two'
 
 function App() {
@@ -11,8 +12,11 @@ function App() {
           <Balance />
         </div>
       </div>
-      <div>
+      <div className="flex items-center justify-between px-4 py-2 max-w-screen-xl mx-auto w-full flex-wrap">
         <FortyTwo />
+      </div>
+      <div className='px-4'>
+        <CreatePool />
       </div>
     </div>
   )
