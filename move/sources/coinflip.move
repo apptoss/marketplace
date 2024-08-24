@@ -23,21 +23,22 @@ module apptoss::coinflip {
         let flip_result = randomness::u64_range(0, 2);
         let is_win = (flip_result == 1 && outcome) || (flip_result == 0 && !outcome);
 
+        // TODO calculate odds
         let fee_multiplier = fixed_point32::create_from_rational(10000 + FLIP_FEE_BPS, 10000);
         let amount_with_fees = multiply_u64(aptCollateral, fee_multiplier);
-        let coin = coin::withdraw<CoinType>(player, amount_with_fees);
+        let coin = coin::withdraw<CoinType>(player, amount_with_fees); // Note: change state
         let fa = coin::coin_to_fungible_asset(coin);
         let metadata = fungible_asset::asset_metadata(&fa);
 
         // transfer bet amount + fees to the vault
-        friend_pool::hold(origin, fa);
+        friend_pool::hold(origin, fa); // Note: change state
         
         let pay_ratio = if (is_win) { FLIP_MULTIPLIER } else { 0 };
         if (pay_ratio > 0) {
             // double bet amount
             let payout = aptCollateral * pay_ratio;
             // rewards player
-            friend_pool::credit(origin, metadata, payout, signer::address_of(player));
+            friend_pool::credit(origin, metadata, payout, signer::address_of(player)); // Note: change state
         };
 
         event::emit(FlipEvent{
@@ -64,15 +65,17 @@ module apptoss::coinflip {
     #[test(
         fx = @aptos_framework, 
         player = @0xc4fe,
+        bettor = @0xc0ffee,
         origin = @0xd2,
     )]
-    fun test(fx: &signer, player: &signer, origin: &signer) {
+    fun test(fx: &signer, player: &signer, bettor: &signer, origin: &signer) {
         // init_module equivalent
         package_manager::initialize_for_test(&account::create_signer_for_test(@apptoss));
         
         // Mint APT
         let (burn_cap, mint_cap) = aptos_coin::initialize_for_test(fx);
         let coin = coin::mint<AptosCoin>(1000000, &mint_cap);
+        let coin2 = coin::mint<AptosCoin>(1000000, &mint_cap);
 
         coin::destroy_burn_cap(burn_cap);
         coin::destroy_mint_cap(mint_cap);
@@ -80,16 +83,31 @@ module apptoss::coinflip {
         // Setup a friend pool before play
         friend_pool::create_pool_coin<AptosCoin>(origin);
 
-        // Deposit APT to the player
-        let player_address = signer::address_of(player);
-        aptos_account::deposit_coins(player_address, coin);
-        let balance = coin::balance<AptosCoin>(player_address);
-        assert!(balance == 1000000, 0);
+        {
+            // Deposit APT to the player
+            let player_address = signer::address_of(player);
+            aptos_account::deposit_coins(player_address, coin);
+            let balance = coin::balance<AptosCoin>(player_address);
+            assert!(balance == 1000000, 0);
 
-        // Coin as collateral
-        randomness::initialize_for_testing(fx);
-        let origin_address = signer::address_of(origin);
-        place_coin<AptosCoin>(player, origin_address, true, 1337);
+            // Coin as collateral
+            randomness::initialize_for_testing(fx);
+            let origin_address = signer::address_of(origin);
+            place_coin<AptosCoin>(player, origin_address, true, 1337);
+        };
+
+        {
+            // Deposit APT to the bettor
+            let bettor_address = signer::address_of(bettor);
+            aptos_account::deposit_coins(bettor_address, coin2);
+            let balance = coin::balance<AptosCoin>(bettor_address);
+            assert!(balance == 1000000, 0);
+
+            // Coin as collateral
+            randomness::initialize_for_testing(fx);
+            let origin_address = signer::address_of(origin);
+            place_coin<AptosCoin>(bettor, origin_address, false, 1337);
+        };
     }
 
     #[test_only]
