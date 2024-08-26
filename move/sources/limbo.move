@@ -9,6 +9,7 @@ module apptoss::limbo {
     
     const FEE_BPS: u64 = 100;
     const E: u64 = 16_777_216;
+    const MAX_MULTIPLIER_PCT: u64 = 1_000_000 * 100;
 
     #[event]
     struct Limbo has drop, store {
@@ -53,7 +54,12 @@ module apptoss::limbo {
     
     inline fun generate_multiplier_pct(seed: u32): u64 {
         let number = (seed as u64) * E / (1 << 32); // range [0, 16777215]
-        E * (10_000 - FEE_BPS) / (number + 1) / 100 // two decimal places
+        let multiplier_pct = E * (10_000 - FEE_BPS) / (number + 1) / 100; // two decimal places
+        if (multiplier_pct > MAX_MULTIPLIER_PCT) {
+            MAX_MULTIPLIER_PCT
+        } else {
+            multiplier_pct
+        }
     }
 
     #[test_only]
