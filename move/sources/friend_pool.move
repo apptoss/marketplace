@@ -20,6 +20,7 @@ module apptoss::friend_pool {
 
     friend apptoss::coinflip;
     friend apptoss::limbo;
+    friend apptoss::dice;
 
     /*
      * Implementation.
