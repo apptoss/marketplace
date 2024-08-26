@@ -15,17 +15,17 @@ module apptoss::limbo {
         pool: address,
         player: address,
         collateral: u64,
-        expect_multiplier_bps: u64,
-        actual_multiplier_bps: u64,
+        expect_multiplier_pct: u64,
+        actual_multiplier_pct: u64,
         pay_ratio_bps: u64,
     }
 
     #[randomness]
-    entry fun place_coin<CoinType>(player: &signer, origin: address, expect_multiplier_bps: u64, collateral: u64) {
+    entry fun place_coin<CoinType>(player: &signer, origin: address, expect_multiplier_pct: u64, collateral: u64) {
         let seed = randomness::u32_integer();
-        let crash_point = generate_multiplier_bps(seed);
+        let crash_point = generate_multiplier_pct(seed);
 
-        let pay_ratio_bps = if (crash_point >= expect_multiplier_bps) { expect_multiplier_bps } else { 0 };
+        let pay_ratio_bps = if (crash_point >= expect_multiplier_pct) { expect_multiplier_pct * 100 } else { 0 };
 
         let coin = coin::withdraw<CoinType>(player, collateral);
         let fa = coin::coin_to_fungible_asset(coin);
@@ -45,15 +45,15 @@ module apptoss::limbo {
             pool,
             player: player_address,
             collateral,
-            expect_multiplier_bps,
-            actual_multiplier_bps: crash_point,
+            expect_multiplier_pct,
+            actual_multiplier_pct: crash_point,
             pay_ratio_bps,
         });
     }
     
-    inline fun generate_multiplier_bps(seed: u32): u64 {
+    inline fun generate_multiplier_pct(seed: u32): u64 {
         let number = (seed as u64) * E / (1 << 32); // range [0, 16777215]
-        E * (10_000 - FEE_BPS) / (number + 1)
+        E * (10_000 - FEE_BPS) / (number + 1) / 100 // two decimal places
     }
 
     #[test_only]
@@ -80,9 +80,9 @@ module apptoss::limbo {
         debug::print(&seed);
         let number = (seed as u64) * E / (1 << 32); // range [0, 16777215]
         debug::print(&number);
-        let multiplier_bps = E * (10_000 - FEE_BPS) / (number + 1);
-        debug::print(&multiplier_bps);
-        debug::print(&generate_multiplier_bps(seed));
+        let multiplier_pct = E * (10_000 - FEE_BPS) / (number + 1);
+        debug::print(&multiplier_pct);
+        debug::print(&generate_multiplier_pct(seed));
     }
     
     #[test(
@@ -119,7 +119,7 @@ module apptoss::limbo {
 
             // Coin as collateral
             let origin_address = signer::address_of(origin);
-            place_coin<AptosCoin>(player, origin_address, 10200, 100);
+            place_coin<AptosCoin>(player, origin_address, 102, 100);
 
             let credit = friend_pool::get_credit(origin_address, metadata, player_address);
             debug::print(&credit);
@@ -134,7 +134,7 @@ module apptoss::limbo {
 
             // Coin as collateral
             let origin_address = signer::address_of(origin);
-            place_coin<AptosCoin>(bettor, origin_address, 19800, 100);
+            place_coin<AptosCoin>(bettor, origin_address, 198, 100);
 
             let credit = friend_pool::get_credit(origin_address, metadata, bettor_address);
             debug::print(&credit);
