@@ -19,6 +19,7 @@ async function main() {
     './move/sources/friend_pool.move',
     './move/sources/coinflip.move',
     './move/sources/limbo.move',
+    './move/sources/dice.move',
   ]
 
   moduleFilePaths.forEach(async (filePath) => {
