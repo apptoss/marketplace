@@ -29,10 +29,12 @@ export function FortyTwo() {
     const tx = await aptos.waitForTransaction({
       transactionHash: response.hash,
     }).then((tx) => tx as UserTransactionResponse)
-    const data = tx.events.find((e) => e.type.endsWith("::coinflip::FlipEvent"))?.data
-    console.log("FlipEvent", data)
+    const data = tx.events.find((e) => e.type.endsWith("::coinflip::CoinFlip"))?.data
+    console.log("CoinFlip", data)
 
-    if (data && data.is_win) {
+    // TODO handle cases where data is undefined
+
+    if (data && data.pay_ratio_bps) {
       setSeries(series + 1)
     } else {
       setSeries(0)
@@ -40,7 +42,7 @@ export function FortyTwo() {
 
     toast({
       variant: "default",
-      title: data.is_win ? "You won!" : "You lost!",
+      title: data.pay_ratio_bps > 0 ? "You won!" : "You lost!",
     })
   }
 
