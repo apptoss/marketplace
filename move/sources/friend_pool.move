@@ -19,6 +19,7 @@ module apptoss::friend_pool {
      */
 
     friend apptoss::coinflip;
+    friend apptoss::limbo;
 
     /*
      * Implementation.
@@ -123,5 +124,5 @@ module apptoss::friend_pool {
      */
 
     #[test_only]
-    friend apptoss::friend_pool_tests;
+    friend apptoss::test_friend_pool;
 }

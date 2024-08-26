@@ -1,5 +1,5 @@
 #[test_only]
-module apptoss::friend_pool_tests {
+module apptoss::test_friend_pool {
     use apptoss::friend_pool;
     use apptoss::package_manager;
     use apptoss::test_helpers;
