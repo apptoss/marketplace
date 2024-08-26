@@ -6,11 +6,8 @@ module apptoss::coinflip {
     use aptos_framework::fungible_asset;
     use aptos_framework::randomness;
     use aptos_framework::signer;
-    
-    use std::fixed_point32::{Self, multiply_u64};
 
-    const FLIP_MULTIPLIER: u64 = 2;
-    const FLIP_FEE_BPS: u64 = 100;
+    const FEE_BPS: u64 = 100;
 
     #[event]
     struct FlipEvent has drop, store {
@@ -19,26 +16,20 @@ module apptoss::coinflip {
     }
 
     #[randomness]
-    entry fun place_coin<CoinType>(player: &signer, origin: address, outcome: bool, aptCollateral: u64) {
+    entry fun place_coin<CoinType>(player: &signer, origin: address, outcome: bool, collateral: u64) {
         let flip_result = randomness::u64_range(0, 2);
         let is_win = (flip_result == 1 && outcome) || (flip_result == 0 && !outcome);
 
-        // TODO calculate odds
-        let fee_multiplier = fixed_point32::create_from_rational(10000 + FLIP_FEE_BPS, 10000);
-        let amount_with_fees = multiply_u64(aptCollateral, fee_multiplier);
-        let coin = coin::withdraw<CoinType>(player, amount_with_fees); // Note: change state
+        let pay_ratio_bps = if (is_win) { 2 * (10_000 - FEE_BPS) } else { 0 };
+ 
+        let coin = coin::withdraw<CoinType>(player, collateral);
         let fa = coin::coin_to_fungible_asset(coin);
         let metadata = fungible_asset::asset_metadata(&fa);
+        friend_pool::hold(origin, fa);
 
-        // transfer bet amount + fees to the vault
-        friend_pool::hold(origin, fa); // Note: change state
-        
-        let pay_ratio = if (is_win) { FLIP_MULTIPLIER } else { 0 };
-        if (pay_ratio > 0) {
-            // double bet amount
-            let payout = aptCollateral * pay_ratio;
-            // rewards player
-            friend_pool::credit(origin, metadata, payout, signer::address_of(player)); // Note: change state
+        if (pay_ratio_bps > 0) {
+            let payout = collateral * pay_ratio_bps / 10_000;
+            friend_pool::credit(origin, metadata, payout, signer::address_of(player));
         };
 
         event::emit(FlipEvent{
@@ -60,15 +51,20 @@ module apptoss::coinflip {
     use aptos_framework::aptos_coin::{Self, AptosCoin};
 
     #[test_only]
+    use std::debug;
+
+    #[test_only]
     use std::option;
 
     #[test(
-        fx = @aptos_framework, 
+        fx = @aptos_framework,
         player = @0xc4fe,
         bettor = @0xc0ffee,
         origin = @0xd2,
     )]
     fun test(fx: &signer, player: &signer, bettor: &signer, origin: &signer) {
+        randomness::initialize_for_testing(fx);
+        
         // init_module equivalent
         package_manager::initialize_for_test(&account::create_signer_for_test(@apptoss));
         
@@ -83,6 +79,8 @@ module apptoss::coinflip {
         // Setup a friend pool before play
         friend_pool::create_pool_coin<AptosCoin>(origin);
 
+        let metadata = option::extract(&mut coin::paired_metadata<AptosCoin>());
+
         {
             // Deposit APT to the player
             let player_address = signer::address_of(player);
@@ -91,9 +89,11 @@ module apptoss::coinflip {
             assert!(balance == 1000000, 0);
 
             // Coin as collateral
-            randomness::initialize_for_testing(fx);
             let origin_address = signer::address_of(origin);
-            place_coin<AptosCoin>(player, origin_address, true, 1337);
+            place_coin<AptosCoin>(player, origin_address, true, 100);
+
+            let credit = friend_pool::get_credit(origin_address, metadata, player_address);
+            debug::print(&credit);
         };
 
         {
@@ -104,9 +104,11 @@ module apptoss::coinflip {
             assert!(balance == 1000000, 0);
 
             // Coin as collateral
-            randomness::initialize_for_testing(fx);
             let origin_address = signer::address_of(origin);
-            place_coin<AptosCoin>(bettor, origin_address, false, 1337);
+            place_coin<AptosCoin>(bettor, origin_address, false, 100);
+
+            let credit = friend_pool::get_credit(origin_address, metadata, bettor_address);
+            debug::print(&credit);
         };
     }
 
