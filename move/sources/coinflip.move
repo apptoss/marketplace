@@ -10,31 +10,43 @@ module apptoss::coinflip {
     const FEE_BPS: u64 = 100;
 
     #[event]
-    struct FlipEvent has drop, store {
-        flip_result: u64,
-        is_win: bool,
+    struct CoinFlip has drop, store {
+        pool: address,
+        player: address,
+        collateral: u64,
+        expect_outcome: bool,
+        actual_outcome: bool,
+        pay_ratio_bps: u64,
     }
 
     #[randomness]
-    entry fun place_coin<CoinType>(player: &signer, origin: address, outcome: bool, collateral: u64) {
-        let flip_result = randomness::u64_range(0, 2);
-        let is_win = (flip_result == 1 && outcome) || (flip_result == 0 && !outcome);
+    entry fun place_coin<CoinType>(player: &signer, origin: address, expect_outcome: bool, collateral: u64) {
+        let seed = randomness::u8_range(0, 2);
+        let actual_outcome = if (seed == 1) { true } else { false };
 
-        let pay_ratio_bps = if (is_win) { 2 * (10_000 - FEE_BPS) } else { 0 };
+        let pay_ratio_bps = if (actual_outcome == expect_outcome) { 2 * (10_000 - FEE_BPS) } else { 0 };
  
         let coin = coin::withdraw<CoinType>(player, collateral);
         let fa = coin::coin_to_fungible_asset(coin);
         let metadata = fungible_asset::asset_metadata(&fa);
         friend_pool::hold(origin, fa);
 
+        let player_address = signer::address_of(player);
+
         if (pay_ratio_bps > 0) {
             let payout = collateral * pay_ratio_bps / 10_000;
-            friend_pool::credit(origin, metadata, payout, signer::address_of(player));
+            friend_pool::credit(origin, metadata, payout, player_address);
         };
 
-        event::emit(FlipEvent{
-            flip_result,
-            is_win,
+        let pool = friend_pool::get_pool_address(origin, metadata);
+
+        event::emit(CoinFlip{
+            pool,
+            player: player_address,
+            collateral,
+            expect_outcome,
+            actual_outcome,
+            pay_ratio_bps,
         });
     }
 
