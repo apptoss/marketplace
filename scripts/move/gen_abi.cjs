@@ -16,8 +16,9 @@ async function main() {
 
   // List all modules that need to be generated
   const moduleFilePaths = [
-    './move/sources/coinflip.move',
     './move/sources/friend_pool.move',
+    './move/sources/coinflip.move',
+    './move/sources/limbo.move',
   ]
 
   moduleFilePaths.forEach(async (filePath) => {
