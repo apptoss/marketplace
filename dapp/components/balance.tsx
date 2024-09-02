@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 
 export function Balance() {
   const { account } = useWallet()
-  const [amount, setAmount] = useState('0')
+  const [amount, setAmount] = useState('0.00')
 
   useEffect(() => {
     if (!account) return
@@ -18,5 +18,5 @@ export function Balance() {
     })
   }, [account])
 
-  return (<div>{amount} APT</div>)
+  return (<div className="w-[350px] mx-auto font-semibold text-4xl">{amount} APT</div>)
 }

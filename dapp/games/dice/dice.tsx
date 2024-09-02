@@ -79,7 +79,7 @@ export function Dice() {
   }
 
   return (
-    <Card className="w-[400px]">
+    <Card>
       <CardHeader className="gap-4 p-4 pb-2">
         <div className="flex items-center justify-between mx-auto space-x-2">
           <Input
