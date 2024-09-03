@@ -11,7 +11,7 @@ import { BadgeCent, Dice3, Rocket } from "lucide-react"
 
 export function GameTabs() {
   return (
-    <Tabs defaultValue="forty-two" className="w-[350px] mx-auto">
+    <Tabs defaultValue="forty-two" className="w-[350px] mx-auto hidden sm:grid">
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="dice"><Dice3 className="w-3.5 h-3.5 mr-1" />Dice</TabsTrigger>
         <TabsTrigger value="limbo"><Rocket className="w-3.5 h-3.5 mr-1" />Limbo</TabsTrigger>
