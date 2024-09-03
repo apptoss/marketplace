@@ -61,7 +61,7 @@ export default function DiceSlider({
         step={1}
         onValueChange={handleSlide}
         inverted={inverted}
-        className="cursor-pointer bg-slate-300 p-3 rounded-2xl after"
+        className="cursor-pointer p-3 rounded-2xl after"
       />
       <div className="slider-mark mt-4 px-3 max-w-full flex flex-row justify-between">
         {marks.map((mark, index) => (

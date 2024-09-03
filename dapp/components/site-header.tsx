@@ -1,3 +1,4 @@
+import { ModeToggle } from "./mode-toggle"
 import { WalletSelector } from "./wallet-selector"
 
 export function SiteHeader() {
@@ -6,6 +7,7 @@ export function SiteHeader() {
       <div className="container flex h-14 max-w-screen-2xl items-center">
         <div className="flex flex-1 justify-end space-x-2">
           <WalletSelector />
+          <ModeToggle />
         </div>
       </div>
     </header>

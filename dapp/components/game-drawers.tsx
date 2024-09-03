@@ -13,7 +13,7 @@ import {
 import { FortyTwo } from "@/games/coinflip/forty-two"
 import { Dice } from "@/games/dice/dice"
 import { Limbo } from "@/games/limbo"
-import { BadgeCent, Dice3, Rocket } from "lucide-react"
+import { BadgeCent, Dices, Rocket } from "lucide-react"
 
 export function GameDrawers() {
   return (
@@ -21,7 +21,7 @@ export function GameDrawers() {
       <Drawer>
         <DrawerTrigger asChild>
           <ToggleGroupItem value="bold" aria-label="Toggle bold">
-            <Rocket className="h-4 w-4" />
+            <Dices className="h-4 w-4" />
           </ToggleGroupItem>
         </DrawerTrigger>
         <DrawerContent>
@@ -38,7 +38,7 @@ export function GameDrawers() {
       <Drawer>
         <DrawerTrigger asChild>
           <ToggleGroupItem value="bold" aria-label="Toggle bold">
-            <Dice3 className="h-4 w-4" />
+            <Rocket className="h-4 w-4" />
           </ToggleGroupItem>
         </DrawerTrigger>
         <DrawerContent>
