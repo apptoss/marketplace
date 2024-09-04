@@ -15,9 +15,18 @@ import { Dice } from "@/games/dice/dice"
 import { Limbo } from "@/games/limbo"
 import { BadgeCent, Dices, Rocket } from "lucide-react"
 
+export function GameDrawerSection() {
+  return (
+    <div className="sm:hidden mx-auto w-[350px] space-y-1">
+      <div className="text-sm text-muted-foreground">Original Games</div>
+      <GameDrawers />
+    </div>
+  )
+}
+
 export function GameDrawers() {
   return (
-    <ToggleGroup type="single" variant="outline" size="lg" className="sm:hidden justify-start mx-auto w-[350px]">
+    <ToggleGroup type="single" variant="outline" size="lg" className="justify-start">
       <Drawer>
         <DrawerTrigger asChild>
           <ToggleGroupItem value="bold" aria-label="Toggle bold">

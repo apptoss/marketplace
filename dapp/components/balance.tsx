@@ -18,5 +18,10 @@ export function Balance() {
     })
   }, [account])
 
-  return (<div className="w-[350px] mx-auto font-semibold text-4xl">{amount} APT</div>)
+  return (
+    <div className="w-[350px] mx-auto">
+      <div className="text-sm text-muted-foreground">Total Balance (APT)</div>
+      <div className="text-4xl font-semibold">{amount}</div>
+    </div>
+  )
 }
