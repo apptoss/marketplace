@@ -17,7 +17,7 @@ import { BadgeCent, Dices, Rocket } from "lucide-react"
 
 export function GameDrawers() {
   return (
-    <ToggleGroup type="single" variant="outline" size="lg" className="sm:hidden">
+    <ToggleGroup type="single" variant="outline" size="lg" className="sm:hidden justify-start mx-auto w-[350px]">
       <Drawer>
         <DrawerTrigger asChild>
           <ToggleGroupItem value="bold" aria-label="Toggle bold">
