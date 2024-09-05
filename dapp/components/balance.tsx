@@ -4,7 +4,7 @@ import { APTOS_COIN } from "@aptos-labs/ts-sdk"
 import { useWallet } from "@aptos-labs/wallet-adapter-react"
 import { useEffect, useState } from "react"
 
-export function Balance() {
+export const useBalance = () => {
   const { account } = useWallet()
   const [amount, setAmount] = useState('0.00')
 
@@ -18,10 +18,16 @@ export function Balance() {
     })
   }, [account])
 
+  return { balance: amount }
+}
+
+export function Balance() {
+  const { balance } = useBalance()
+
   return (
     <div className="w-[350px] mx-auto">
       <div className="text-sm text-muted-foreground">Total Balance (APT)</div>
-      <div className="text-4xl font-semibold">{amount}</div>
+      <div className="text-4xl font-semibold">{balance}</div>
     </div>
   )
 }

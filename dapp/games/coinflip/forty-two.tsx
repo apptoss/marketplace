@@ -1,12 +1,12 @@
 import { aptos } from "@/aptos/client"
 import { ABI } from "@/aptos/coinflip-abi"
+import { AmountInput } from "@/components/amount-input"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import { Card, CardFooter, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { toast } from "@/components/ui/use-toast"
 import { ORIGIN } from "@/constants"
+import { parseApt } from "@/lib/units"
 import { APTOS_COIN, UserTransactionResponse } from "@aptos-labs/ts-sdk"
 import { useWalletClient } from '@thalalabs/surf/hooks'
 import { useState } from "react"
@@ -14,16 +14,17 @@ import { useState } from "react"
 export function FortyTwo() {
   const {connected, client } = useWalletClient()
   const [series, setSeries] = useState(0)
+  const [amount, setAmount] = useState<number | undefined>(undefined)
 
   async function place(outcome: boolean) {
-    if (!connected || !client) {
+    if (!connected || !client || !amount) {
       console.error('Cannot place without account')
       return
     }
 
     const response = await client.useABI(ABI).place_coin({
       type_arguments: [APTOS_COIN],
-      arguments: [ORIGIN, outcome, 1000000],
+      arguments: [ORIGIN, outcome, parseApt(amount)],
     })
 
     const tx = await aptos.waitForTransaction({
@@ -47,28 +48,12 @@ export function FortyTwo() {
   }
 
   return (
-    <Card>
-      <CardContent className="gap-4 p-4 pb-2">
+    <Card className="border-none shadow-none sm:shadow sm:border-solid">
+      <CardHeader className="gap-4">
         <div className="flex items-center justify-between mx-auto space-x-2">
-          <Input
-            id="amount"
-            type="number"
-            defaultValue="1"
-            disabled
-          />
-          <div>APT</div>
-          <ToggleGroup
-            type="single"
-            defaultValue="s"
-            variant="outline"
-            disabled
-          >
-            <ToggleGroupItem value="s">1</ToggleGroupItem>
-            <ToggleGroupItem value="m">10</ToggleGroupItem>
-            <ToggleGroupItem value="l">100</ToggleGroupItem>
-          </ToggleGroup>
+          <AmountInput amount={amount} onChangeAmount={(am) => setAmount(am)}/>
         </div>
-      </CardContent>
+      </CardHeader>
       <CardFooter className="flex flex-row border-t p-4">
         <div className="flex w-full items-center gap-2">
           <div className="grid flex-1 auto-rows-min gap-0.5">

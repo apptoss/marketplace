@@ -1,5 +1,6 @@
 import { aptos } from "@/aptos/client"
 import { ABI } from "@/aptos/dice-abi"
+import { AmountInput } from "@/components/amount-input"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -7,11 +8,10 @@ import {
   CardFooter,
   CardHeader
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { toast } from "@/components/ui/use-toast"
 import { ORIGIN } from "@/constants"
 import DiceSlider from "@/games/dice/dice-slider"
+import { parseApt } from "@/lib/units"
 import { APTOS_COIN, UserTransactionResponse } from "@aptos-labs/ts-sdk"
 import { useWalletClient } from '@thalalabs/surf/hooks'
 import { ArrowLeftRight } from "lucide-react"
@@ -28,6 +28,7 @@ export function Dice() {
   const [winChange, setWinChange] = useState(defaultWinChange)
   const [isRollOver, setIsRollOver] = useState(false)
   const [diceResult, setDiceResult] = useState<number | null>(null)
+  const [amount, setAmount] = useState<number | undefined>(undefined)
 
   const rnn = (num: number, decimal: number) => {
     return Math.round(num * Math.pow(10, decimal)) / Math.pow(10, decimal)
@@ -53,14 +54,14 @@ export function Dice() {
   const [isSubmitting] = useState(false)
 
   const handleSubmitBet = async () => {
-    if (!connected || !client) {
+    if (!connected || !client || !amount) {
       console.error('Cannot place without account')
       return
     }
-    
+
     const response = await client.useABI(ABI).place_coin({
       type_arguments: [APTOS_COIN],
-      arguments: [ORIGIN, true, 50.25 * 100, 1000000],
+      arguments: [ORIGIN, true, 50.25 * 100, parseApt(amount)],
     })
 
     const tx = await aptos.waitForTransaction({
@@ -79,26 +80,10 @@ export function Dice() {
   }
 
   return (
-    <Card>
-      <CardHeader className="gap-4 p-4 pb-2">
+    <Card className="border-none shadow-none sm:shadow sm:border-solid">
+      <CardHeader className="gap-4 pb-2">
         <div className="flex items-center justify-between mx-auto space-x-2">
-          <Input
-            id="amount"
-            type="number"
-            defaultValue="1"
-            disabled
-          />
-          <div>APT</div>
-          <ToggleGroup
-            type="single"
-            defaultValue="s"
-            variant="outline"
-            disabled
-          >
-            <ToggleGroupItem value="s">1</ToggleGroupItem>
-            <ToggleGroupItem value="m">10</ToggleGroupItem>
-            <ToggleGroupItem value="l">100</ToggleGroupItem>
-          </ToggleGroup>
+          <AmountInput amount={amount} onChangeAmount={(am) => setAmount(am)}/>
         </div>
       </CardHeader>
 

@@ -5,7 +5,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { FortyTwo } from "@/games/coinflip/forty-two"
-import { Dice } from "@/games/dice/dice"
+import { Dice } from "@/games/dice"
 import { Limbo } from "@/games/limbo"
 import { BadgeCent, Dices, Rocket } from "lucide-react"
 

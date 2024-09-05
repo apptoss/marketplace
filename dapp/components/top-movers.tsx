@@ -13,8 +13,8 @@ export function TopMovers() {
   return (
     <Tabs defaultValue="recent">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="recent">Recent bets</TabsTrigger>
-        <TabsTrigger value="high-rollers">High rollers</TabsTrigger>
+        <TabsTrigger value="recent">Recent Bets</TabsTrigger>
+        <TabsTrigger value="high-rollers">High Rollers</TabsTrigger>
       </TabsList>
     </Tabs>
   )

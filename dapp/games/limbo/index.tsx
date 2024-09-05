@@ -1,12 +1,14 @@
 import { aptos } from "@/aptos/client"
 import { ABI } from "@/aptos/limbo-abi"
+import { AmountInput } from "@/components/amount-input"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { toast } from "@/components/ui/use-toast"
 import { ORIGIN } from "@/constants"
+import { parseApt } from "@/lib/units"
 import { APTOS_COIN, UserTransactionResponse } from "@aptos-labs/ts-sdk"
 import { useWalletClient } from '@thalalabs/surf/hooks'
 import { useState } from "react"
@@ -14,16 +16,18 @@ import { useState } from "react"
 export function Limbo() {
   const {connected, client } = useWalletClient()
   const [crashPoint, setCrashPoint] = useState("0")
+  const [amount, setAmount] = useState<number | undefined>(undefined)
+  const [targetMultiplier, setTargetMultiplier] = useState<number>(1.98)
 
-  async function place(multiplier: number) {
-    if (!connected || !client) {
+  async function place() {
+    if (!connected || !client || !amount) {
       console.error('Cannot place without account')
       return
     }
 
     const response = await client.useABI(ABI).place_coin({
       type_arguments: [APTOS_COIN],
-      arguments: [ORIGIN, multiplier * 100, 1000000],
+      arguments: [ORIGIN, Math.floor(targetMultiplier * 100), parseApt(amount)],
     })
 
     const tx = await aptos.waitForTransaction({
@@ -42,31 +46,34 @@ export function Limbo() {
   }
 
   return (
-    <Card>
-      <CardContent className="gap-4 p-4 pb-2">
+    <Card className="border-none shadow-none sm:shadow sm:border-solid">
+      <CardHeader className="gap-4">
         <div className="flex items-center justify-between mx-auto space-x-2">
-          <Input
-            id="amount"
-            type="number"
-            defaultValue="1"
-            disabled
-          />
-          <div>APT</div>
-          <ToggleGroup
-            type="single"
-            defaultValue="s"
-            variant="outline"
-            disabled
-          >
-            <ToggleGroupItem value="s">1</ToggleGroupItem>
-            <ToggleGroupItem value="m">10</ToggleGroupItem>
-            <ToggleGroupItem value="l">100</ToggleGroupItem>
-          </ToggleGroup>
+          <AmountInput amount={amount} onChangeAmount={(am) => setAmount(am)}/>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <div className="flex flex-row items-center justify-between space-x-2">
+          <div className="grid w-full max-w-sm items-center gap-1.5">
+            <Label htmlFor="multiplier">Target Multiplier</Label>
+            <Input 
+              type="number" 
+              id="multiplier" 
+              placeholder="1.98" 
+              step="0.01" 
+              max="1000000" 
+              value={targetMultiplier} onChange={(e) => {
+                const amount = e.target.valueAsNumber
+                setTargetMultiplier(amount)
+              }} />
+          </div>
         </div>
       </CardContent>
+      
       <CardFooter className="flex flex-row border-t p-4">
         <div className="flex w-full items-center gap-2">
-          <Button onClick={() => place(1.98)}>Bet</Button>
+          <Button onClick={() => place()}>Bet</Button>
           <Separator orientation="vertical" className="mx-2 h-10 w-px" />
           <div className="grid flex-1 auto-rows-min gap-0.5">
             <div className="text-xs text-muted-foreground">Multiplier</div>

@@ -11,7 +11,7 @@ import {
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
 import { FortyTwo } from "@/games/coinflip/forty-two"
-import { Dice } from "@/games/dice/dice"
+import { Dice } from "@/games/dice"
 import { Limbo } from "@/games/limbo"
 import { BadgeCent, Dices, Rocket } from "lucide-react"
 
@@ -33,8 +33,8 @@ export function GameDrawers() {
             <Dices className="h-4 w-4" />
           </ToggleGroupItem>
         </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader>
+        <DrawerContent className="h-[75vh]">
+          <DrawerHeader className="px-8 flex justify-between">
             <DrawerTitle>Dice</DrawerTitle>
             <DrawerDescription>RTP (Return to player) 99%</DrawerDescription>
           </DrawerHeader>
@@ -43,15 +43,15 @@ export function GameDrawers() {
           </div>
         </DrawerContent>
       </Drawer>
-      
+
       <Drawer>
         <DrawerTrigger asChild>
           <ToggleGroupItem value="bold" aria-label="Toggle bold">
             <Rocket className="h-4 w-4" />
           </ToggleGroupItem>
         </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader>
+        <DrawerContent className="h-[75vh]">
+          <DrawerHeader className="px-8 flex justify-between">
             <DrawerTitle>Limbo</DrawerTitle>
             <DrawerDescription>RTP (Return to player) 99%</DrawerDescription>
           </DrawerHeader>
@@ -60,15 +60,15 @@ export function GameDrawers() {
           </div>
         </DrawerContent>
       </Drawer>
-      
+
       <Drawer>
         <DrawerTrigger asChild>
           <ToggleGroupItem value="bold" aria-label="Toggle bold">
             <BadgeCent className="h-4 w-4" />
           </ToggleGroupItem>
         </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader>
+        <DrawerContent className="h-[75vh]">
+          <DrawerHeader className="px-8 flex justify-between">
             <DrawerTitle>Forty Two</DrawerTitle>
             <DrawerDescription>RTP (Return to player) 99%</DrawerDescription>
           </DrawerHeader>
