@@ -3,10 +3,12 @@ import { aptos } from "@/aptos/client"
 import { AmountInput } from "@/components/amount-input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Dialog } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
+import { ConnectWalletDialog } from "@/components/wallet-selector"
 import { ORIGIN } from "@/constants"
 import { parseApt } from "@/lib/units"
 import { APTOS_COIN, UserTransactionResponse } from "@aptos-labs/ts-sdk"
@@ -18,9 +20,15 @@ export function Limbo() {
   const [crashPoint, setCrashPoint] = useState("0")
   const [amount, setAmount] = useState<number | undefined>(undefined)
   const [targetMultiplier, setTargetMultiplier] = useState<number>(1.98)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   async function place() {
-    if (!connected || !client || !amount) {
+    if (!connected) {
+      setIsDialogOpen(true)
+      return
+    }
+
+    if (!client || !amount) {
       console.error('Cannot place without account')
       return
     }
@@ -57,12 +65,12 @@ export function Limbo() {
         <div className="flex flex-row items-center justify-between space-x-2">
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <Label htmlFor="multiplier">Target Multiplier</Label>
-            <Input 
-              type="number" 
-              id="multiplier" 
-              placeholder="1.98" 
-              step="0.01" 
-              max="1000000" 
+            <Input
+              type="number"
+              id="multiplier"
+              placeholder="1.98"
+              step="0.01"
+              max="1000000"
               value={targetMultiplier} onChange={(e) => {
                 const amount = e.target.valueAsNumber
                 setTargetMultiplier(amount)
@@ -70,7 +78,7 @@ export function Limbo() {
           </div>
         </div>
       </CardContent>
-      
+
       <CardFooter className="flex flex-row border-t p-4">
         <div className="flex w-full items-center gap-2">
           <Button onClick={() => place()}>Bet</Button>
@@ -86,6 +94,12 @@ export function Limbo() {
           </div>
         </div>
       </CardFooter>
+
+      {isDialogOpen &&  (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <ConnectWalletDialog close={() => setIsDialogOpen(false)} />
+        </Dialog>
+      )}
     </Card>
   )
 }

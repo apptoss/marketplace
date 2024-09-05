@@ -8,7 +8,9 @@ import {
   CardFooter,
   CardHeader
 } from "@/components/ui/card"
+import { Dialog } from "@/components/ui/dialog"
 import { toast } from "@/components/ui/use-toast"
+import { ConnectWalletDialog } from "@/components/wallet-selector"
 import { ORIGIN } from "@/constants"
 import DiceSlider from "@/games/dice/dice-slider"
 import { parseApt } from "@/lib/units"
@@ -29,6 +31,7 @@ export function Dice() {
   const [isRollOver, setIsRollOver] = useState(false)
   const [diceResult, setDiceResult] = useState<number | null>(null)
   const [amount, setAmount] = useState<number | undefined>(undefined)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const rnn = (num: number, decimal: number) => {
     return Math.round(num * Math.pow(10, decimal)) / Math.pow(10, decimal)
@@ -54,7 +57,12 @@ export function Dice() {
   const [isSubmitting] = useState(false)
 
   const handleSubmitBet = async () => {
-    if (!connected || !client || !amount) {
+    if (!connected) {
+      setIsDialogOpen(true)
+      return
+    }
+
+    if (!client || !amount) {
       console.error('Cannot place without account')
       return
     }
@@ -137,6 +145,12 @@ export function Dice() {
             Bet
         </Button>
       </CardFooter>
+
+      {isDialogOpen &&  (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <ConnectWalletDialog close={() => setIsDialogOpen(false)} />
+        </Dialog>
+      )}
     </Card>
   )
 }

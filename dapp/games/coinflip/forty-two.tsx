@@ -3,8 +3,10 @@ import { aptos } from "@/aptos/client"
 import { AmountInput } from "@/components/amount-input"
 import { Button } from "@/components/ui/button"
 import { Card, CardFooter, CardHeader } from "@/components/ui/card"
+import { Dialog } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "@/components/ui/use-toast"
+import { ConnectWalletDialog } from "@/components/wallet-selector"
 import { ORIGIN } from "@/constants"
 import { parseApt } from "@/lib/units"
 import { APTOS_COIN, UserTransactionResponse } from "@aptos-labs/ts-sdk"
@@ -15,9 +17,15 @@ export function FortyTwo() {
   const {connected, client } = useWalletClient()
   const [series, setSeries] = useState(0)
   const [amount, setAmount] = useState<number | undefined>(undefined)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   async function place(outcome: boolean) {
-    if (!connected || !client || !amount) {
+    if (!connected) {
+      setIsDialogOpen(true)
+      return
+    }
+
+    if (!client || !amount) {
       console.error('Cannot place without account')
       return
     }
@@ -84,6 +92,12 @@ export function FortyTwo() {
           </div>
         </div>
       </CardFooter>
+
+      {isDialogOpen &&  (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <ConnectWalletDialog close={() => setIsDialogOpen(false)} />
+        </Dialog>
+      )}
     </Card>
   )
 }
