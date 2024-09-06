@@ -1,5 +1,5 @@
+import { ABI } from "@/aptos/abis/limbo-abi"
 import { aptos } from "@/aptos/client"
-import { ABI } from "@/aptos/limbo-abi"
 import { AmountInput } from "@/components/amount-input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"

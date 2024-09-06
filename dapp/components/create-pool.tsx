@@ -1,4 +1,4 @@
-import { ABI } from "@/aptos/friend_pool-abi"
+import { ABI } from "@/aptos/abis/friend_pool-abi"
 import { APTOS_COIN } from "@aptos-labs/ts-sdk"
 import { useWallet } from "@aptos-labs/wallet-adapter-react"
 import { createEntryPayload } from "@thalalabs/surf"

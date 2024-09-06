@@ -1,5 +1,5 @@
+import { ABI } from "@/aptos/abis/coinflip-abi"
 import { aptos } from "@/aptos/client"
-import { ABI } from "@/aptos/coinflip-abi"
 import { AmountInput } from "@/components/amount-input"
 import { Button } from "@/components/ui/button"
 import { Card, CardFooter, CardHeader } from "@/components/ui/card"

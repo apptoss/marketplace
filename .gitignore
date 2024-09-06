@@ -27,7 +27,6 @@ dist-ssr
 .aptos
 **/move/build
 contract_address.txt
-dapp/aptos/*-abi.ts
 
 # Environments
 .env*
