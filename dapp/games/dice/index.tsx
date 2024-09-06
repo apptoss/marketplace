@@ -19,13 +19,13 @@ import { useWalletClient } from '@thalalabs/surf/hooks'
 import { ArrowLeftRight } from "lucide-react"
 import { useState } from "react"
 
-const defaultRollOver = 50.25
-const defaultPayout = 1.9899
-const defaultWinChange = defaultRollOver
+const defaultNumber = 50
+const defaultPayout = 1.98
+const defaultWinChange = defaultNumber
 
 export function Dice() {
   const {connected, client } = useWalletClient()
-  const [rollOver, setRollOver] = useState(defaultRollOver)
+  const [expectNumber, setExpectNumber] = useState(defaultNumber)
   const [payout, setPayout] = useState(defaultPayout)
   const [winChange, setWinChange] = useState(defaultWinChange)
   const [isRollOver, setIsRollOver] = useState(false)
@@ -37,17 +37,17 @@ export function Dice() {
     return Math.round(num * Math.pow(10, decimal)) / Math.pow(10, decimal)
   }
 
-  const handleSlideRollOver = (newRollOver: number[]) => {
-    if (!newRollOver || newRollOver.length === 0) return
+  const handleSlideNumber = (range: number[]) => {
+    if (!range || range.length === 0) return
 
-    let rollOver = newRollOver[0]
+    let newNumber = range[0]
 
-    if (newRollOver[0] < 2) rollOver = 2
-    if (newRollOver[0] > 98) rollOver = 98
+    if (newNumber < 2) newNumber = 2
+    if (newNumber > 98) newNumber = 98
 
-    setRollOver(rollOver)
-    setWinChange(rollOver)
-    setPayout(rnn((100 / rollOver) * 0.99, 4))
+    setExpectNumber(newNumber)
+    setWinChange(newNumber)
+    setPayout(rnn((100 / newNumber) * 0.99, 4))
   }
 
   const handleInvertRollOver = () => {
@@ -69,7 +69,7 @@ export function Dice() {
 
     const response = await client.useABI(ABI).place_coin({
       type_arguments: [APTOS_COIN],
-      arguments: [ORIGIN, true, 50.25 * 100, parseApt(amount)],
+      arguments: [ORIGIN, isRollOver, expectNumber * 100, parseApt(amount)],
     })
 
     const tx = await aptos.waitForTransaction({
@@ -97,8 +97,8 @@ export function Dice() {
 
       <CardContent className="mt-20">
         <DiceSlider
-          rollOver={rollOver}
-          handleSlide={handleSlideRollOver}
+          rollOver={expectNumber}
+          handleSlide={handleSlideNumber}
           inverted={isRollOver}
           result={diceResult}
         />
@@ -116,7 +116,7 @@ export function Dice() {
             </p>
             <div className="flex flex-row border-1 rounded-md justify-between border-[1px] divide-solid border-slate-300 px-3 py-2">
               <p className="text-base">
-                {isRollOver ? 100 - rollOver : rollOver}
+                {isRollOver ? 100 - expectNumber : expectNumber}
               </p>
               <div
                 onClick={() => handleInvertRollOver()}
