@@ -29,8 +29,8 @@ export function GameDrawers() {
     <ToggleGroup type="single" variant="outline" size="lg" className="justify-start">
       <Drawer>
         <DrawerTrigger asChild>
-          <ToggleGroupItem value="bold" aria-label="Toggle bold">
-            <Dices className="h-4 w-4" />
+          <ToggleGroupItem value="bold" aria-label="Toggle bold" className="h-14">
+            <Dices className="w-8" />
           </ToggleGroupItem>
         </DrawerTrigger>
         <DrawerContent className="h-[75vh]">
@@ -46,8 +46,8 @@ export function GameDrawers() {
 
       <Drawer>
         <DrawerTrigger asChild>
-          <ToggleGroupItem value="bold" aria-label="Toggle bold">
-            <Rocket className="h-4 w-4" />
+          <ToggleGroupItem value="bold" aria-label="Toggle bold" className="h-14">
+            <Rocket className="w-8" />
           </ToggleGroupItem>
         </DrawerTrigger>
         <DrawerContent className="h-[75vh]">
@@ -63,8 +63,8 @@ export function GameDrawers() {
 
       <Drawer>
         <DrawerTrigger asChild>
-          <ToggleGroupItem value="bold" aria-label="Toggle bold">
-            <BadgeCent className="h-4 w-4" />
+          <ToggleGroupItem value="bold" aria-label="Toggle bold" className="h-14">
+            <BadgeCent className="w-8" />
           </ToggleGroupItem>
         </DrawerTrigger>
         <DrawerContent className="h-[75vh]">
