@@ -116,7 +116,7 @@ export function Dice() {
             </p>
             <div className="flex flex-row border-1 rounded-md justify-between border-[1px] divide-solid border-slate-300 px-3 py-2">
               <p className="text-base">
-                {isRollOver ? 100 - expectNumber : expectNumber}
+                {expectNumber}
               </p>
               <div
                 onClick={() => handleInvertRollOver()}
