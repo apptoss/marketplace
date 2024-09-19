@@ -34,24 +34,27 @@ export function Dice() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const rnn = (num: number, decimal: number) => {
-    return Math.round(num * Math.pow(10, decimal)) / Math.pow(10, decimal)
+    return Math.floor(num * Math.pow(10, decimal)) / Math.pow(10, decimal)
   }
 
   const handleSlideNumber = (range: number[]) => {
     if (!range || range.length === 0) return
 
-    let newNumber = range[0]
+    let sliderNumber = range[0]
+    if (sliderNumber < 2) sliderNumber = 2
+    if (sliderNumber > 98) sliderNumber = 98
 
-    if (newNumber < 2) newNumber = 2
-    if (newNumber > 98) newNumber = 98
-
-    setExpectNumber(newNumber)
-    setWinChange(newNumber)
-    setPayout(rnn((100 / newNumber) * 0.99, 4))
+    const newExpectNumber = isRollOver ? 100 - sliderNumber : sliderNumber
+    const chance = isRollOver ? 100 - newExpectNumber : newExpectNumber
+    setExpectNumber(newExpectNumber)
+    setWinChange(chance)
+    setPayout(rnn((100 / chance) * 0.99, 4))
   }
 
   const handleInvertRollOver = () => {
-    setIsRollOver((prev) => !prev)
+    const newIsRollOver = !isRollOver
+    setIsRollOver(newIsRollOver)
+    setExpectNumber(100 - expectNumber)
   }
 
   const [isSubmitting] = useState(false)
@@ -97,7 +100,7 @@ export function Dice() {
 
       <CardContent className="mt-20">
         <DiceSlider
-          rollOver={expectNumber}
+          sliderNumber={isRollOver ? 100 - expectNumber : expectNumber}
           handleSlide={handleSlideNumber}
           inverted={isRollOver}
           result={diceResult}

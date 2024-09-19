@@ -1,7 +1,7 @@
 import { Slider } from "@/components/ui/slider"
 
 interface Props {
-  rollOver: number
+  sliderNumber: number
   handleSlide: (newRollNumber: number[]) => void
   inverted: boolean
   result: number | null
@@ -23,7 +23,7 @@ const marks = [
 ]
 
 export default function DiceSlider({
-  rollOver,
+  sliderNumber,
   handleSlide,
   inverted,
   result,
@@ -57,7 +57,7 @@ export default function DiceSlider({
         </div>
       )}
       <Slider
-        value={[rollOver]}
+        value={[sliderNumber]}
         step={1}
         onValueChange={handleSlide}
         inverted={inverted}
