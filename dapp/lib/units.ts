@@ -1,5 +1,5 @@
 export function formatApt(octa: number): string {
-  return (octa / 1e8).toFixed(2)
+  return (Math.floor(octa * 100 / 1e8) / 100).toString()
 }
 
 export function parseApt(apt: number): number {

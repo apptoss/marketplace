@@ -24,8 +24,9 @@ export const useBalance = () => {
     client.useABI(ABI).view.get_credit_coin({
       functionArguments: [ORIGIN, account.address as `0x${string}`],
       typeArguments: [APTOS_COIN],
-    }).then((credit) => {
-      setCredits(Number(credit))
+    }).then(([octa]) => {
+      console.log('credits', octa)
+      setCredits(Number(octa))
     })
 
     client.useABI(ABI).view.get_pool_address_coin({
