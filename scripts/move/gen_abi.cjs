@@ -34,7 +34,7 @@ async function main() {
     const abiData = abiResponse.abi;
   
     const tsContent = `export const ABI = ${JSON.stringify(abiData)} as const`;
-    const tsFilePath = path.join('./dapp/aptos', `${moduleName}-abi.ts`);
+    const tsFilePath = path.join('./dapp/aptos/abis', `${moduleName}-abi.ts`);
     fs.writeFileSync(tsFilePath, tsContent);
   
     console.log('ABI data written to', tsFilePath);

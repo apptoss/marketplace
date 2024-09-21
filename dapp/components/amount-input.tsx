@@ -1,6 +1,6 @@
 import aptIcon from "@/assets/apt.svg"
-import { useBalance } from "@/components/balance"
 import { Input, InputProps } from "@/components/ui/input"
+import { useBalance } from "@/hooks/use-balance"
 
 export const AmountInput = ({
   amount,
