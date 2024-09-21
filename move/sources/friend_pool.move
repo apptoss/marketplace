@@ -88,10 +88,15 @@ module apptoss::friend_pool {
 
     public entry fun realize(redeemer: &signer, origin: address, metadata: Object<Metadata>, amount: u64) acquires FriendPool {
         let redeemer_address = signer::address_of(redeemer);
-        let pool = borrow_global_mut<FriendPool>(get_pool_address(origin, metadata));
+        let pool_address = get_pool_address(origin, metadata);
+        let pool = borrow_global_mut<FriendPool>(pool_address);
         
         let last_credit = *smart_table::borrow(&pool.credits, redeemer_address);
         assert!(last_credit >= amount, 0);
+        
+        let solvent = primary_fungible_store::is_balance_at_least(pool_address, metadata, amount);
+        assert!(solvent, 1);
+        
         last_credit = last_credit - amount;
         smart_table::upsert(&mut pool.credits, redeemer_address, last_credit);
 
@@ -99,10 +104,21 @@ module apptoss::friend_pool {
         primary_fungible_store::transfer(pool_signer, metadata, redeemer_address, amount);
     }
 
+    public entry fun realize_coin<CoinType>(redeemer: &signer, origin: address, amount: u64) acquires FriendPool {
+        let metadata = option::extract(&mut coin::paired_metadata<CoinType>());
+        realize(redeemer, origin, metadata, amount)
+    }
+
     #[view]
     public fun get_credit(origin: address, metadata: Object<Metadata>, destination: address): u64 acquires FriendPool {
         let pool = borrow_global<FriendPool>(get_pool_address(origin, metadata));
         *smart_table::borrow_with_default(&pool.credits, destination, &0)
+    }
+
+    #[view]
+    public fun get_credit_coin<CoinType>(origin: address, destination: address): u64 acquires FriendPool {
+        let metadata = option::extract(&mut coin::paired_metadata<CoinType>());
+        get_credit(origin, metadata, destination)
     }
 
     #[view]
@@ -115,9 +131,7 @@ module apptoss::friend_pool {
     #[view]
     public fun get_pool_address_coin<CoinType>(origin: address): address {
         let metadata = option::extract(&mut coin::paired_metadata<CoinType>());
-        let signer = &package_manager::get_signer();
-        let signer_address = signer::address_of(signer);
-        object::create_object_address(&signer_address, get_pool_seed(origin, metadata))
+        get_pool_address(origin, metadata)
     }
 
     /*
