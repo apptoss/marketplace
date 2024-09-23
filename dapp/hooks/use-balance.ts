@@ -10,6 +10,7 @@ export const useBalance = () => {
   const { account } = useWallet()
   const [amount, setAmount] = useState(0)
   const [credits, setCredits] = useState(0)
+  const [pool, setPool] = useState(0)
 
   useEffect(() => {
     if (!account) return
@@ -37,10 +38,15 @@ export const useBalance = () => {
         accountAddress: poolAddress[0],
         coinType: APTOS_COIN,
       }).then((octa) => {
-        console.log('pool available', formatApt(octa))
+        setPool(octa)
       })
     })
   }, [account])
 
-  return { balance: formatApt(amount + credits), amount: formatApt(amount), credits: formatApt(credits) }
+  return { 
+    balance: formatApt(amount + credits), 
+    amount: formatApt(amount), 
+    credits: formatApt(credits),
+    pool: formatApt(pool),
+  }
 }
