@@ -43,7 +43,7 @@ export function FortyTwo() {
 
     // TODO handle cases where data is undefined
 
-    if (data && data.pay_ratio_bps) {
+    if (data && data.pay_ratio_bps > 0) {
       setSeries(series + 1)
     } else {
       setSeries(0)
