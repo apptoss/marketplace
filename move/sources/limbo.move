@@ -6,7 +6,9 @@ module apptoss::limbo {
     use aptos_framework::fungible_asset;
     use aptos_framework::randomness;
     use aptos_framework::signer;
-    
+
+    use std::option;
+
     const FEE_BPS: u64 = 100;
     const E: u64 = 16_777_216;
     const MAX_MULTIPLIER_PCT: u64 = 1_000_000 * 100;
@@ -28,12 +30,19 @@ module apptoss::limbo {
 
         let pay_ratio_bps = if (crash_point >= expect_multiplier_pct) { expect_multiplier_pct * 100 } else { 0 };
 
-        let coin = coin::withdraw<CoinType>(player, collateral);
-        let fa = coin::coin_to_fungible_asset(coin);
-        let metadata = fungible_asset::asset_metadata(&fa);
-        friend_pool::hold(origin, fa);
-
+        // prefers credits to funds
         let player_address = signer::address_of(player);
+        let metadata = option::extract(&mut coin::paired_metadata<CoinType>());
+        let credits = friend_pool::get_credit(origin, metadata, player_address);
+        if (credits >= collateral) {
+            friend_pool::debit(origin, metadata, collateral, player_address);
+            // TODO deliver disbursements (cash flow management)
+        } else {
+            let remains = collateral - credits;
+            let coin = coin::withdraw<CoinType>(player, remains);
+            let fa = coin::coin_to_fungible_asset(coin);
+            friend_pool::hold(origin, fa);
+        };
 
         if (pay_ratio_bps > 0) {
             let payout = collateral * pay_ratio_bps / 10_000;
@@ -76,9 +85,6 @@ module apptoss::limbo {
 
     #[test_only]
     use std::debug;
-
-    #[test_only]
-    use std::option;
 
     #[test]
     fun test_derive_rng() {

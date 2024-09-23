@@ -7,6 +7,8 @@ module apptoss::dice {
     use aptos_framework::randomness;
     use aptos_framework::signer;
 
+    use std::option;
+
     const FEE_BPS: u32 = 100;
 
     #[event]
@@ -32,12 +34,19 @@ module apptoss::dice {
         let win = if (is_roll_over) { actual_hundredths > expect_hundredths } else { actual_hundredths < expect_hundredths };
         let pay_ratio_bps = if (win) { get_pay_ratio_bps(is_roll_over, expect_hundredths) } else { 0 };
 
-        let coin = coin::withdraw<CoinType>(player, collateral);
-        let fa = coin::coin_to_fungible_asset(coin);
-        let metadata = fungible_asset::asset_metadata(&fa);
-        friend_pool::hold(origin, fa);
-
+        // prefers credits to funds
         let player_address = signer::address_of(player);
+        let metadata = option::extract(&mut coin::paired_metadata<CoinType>());
+        let credits = friend_pool::get_credit(origin, metadata, player_address);
+        if (credits >= collateral) {
+            friend_pool::debit(origin, metadata, collateral, player_address);
+            // TODO deliver disbursements (cash flow management)
+        } else {
+            let remains = collateral - credits;
+            let coin = coin::withdraw<CoinType>(player, remains);
+            let fa = coin::coin_to_fungible_asset(coin);
+            friend_pool::hold(origin, fa);
+        };
 
         if (pay_ratio_bps > 0) {
             let payout = collateral * pay_ratio_bps / 10_000;
@@ -76,9 +85,6 @@ module apptoss::dice {
 
     #[test_only]
     use std::debug;
-
-    #[test_only]
-    use std::option;
 
     #[test]
     fun test_pay_ratio() {

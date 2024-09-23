@@ -66,7 +66,7 @@ module apptoss::friend_pool {
     /// Hold assets in the friend pool.
     public(friend) fun hold(origin: address, asset: FungibleAsset) {
         let to_pool = get_pool_address(origin, fungible_asset::asset_metadata(&asset));
-        // deliver disbursements (cash flow management)
+        // TODO deliver disbursements (cash flow management)
         primary_fungible_store::deposit(to_pool, asset);
     }
 
@@ -83,6 +83,14 @@ module apptoss::friend_pool {
         let pool = borrow_global_mut<FriendPool>(get_pool_address(origin, metadata));
         let last_credit = *smart_table::borrow_with_default(&pool.credits, destination, &0);
         last_credit = last_credit + amount;
+        smart_table::upsert(&mut pool.credits, destination, last_credit);
+    }
+
+    /// Debit virtual funds from an account.
+    public(friend) fun debit(origin: address, metadata: Object<Metadata>, amount: u64, destination: address) acquires FriendPool {
+        let pool = borrow_global_mut<FriendPool>(get_pool_address(origin, metadata));
+        let last_credit = *smart_table::borrow_with_default(&pool.credits, destination, &0);
+        last_credit = last_credit - amount;
         smart_table::upsert(&mut pool.credits, destination, last_credit);
     }
 
