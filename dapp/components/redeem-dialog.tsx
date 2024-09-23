@@ -20,6 +20,7 @@ import { useWalletClient } from "@thalalabs/surf/hooks"
   
 export function Redeem() {
   const { credits, pool } = useBalance()
+  const available = Math.min(Number(credits), Number(pool))
 
   const {connected, client } = useWalletClient()
   const onRedeem = async () => {
@@ -30,7 +31,7 @@ export function Redeem() {
 
     const response = await client.useABI(ABI).realize_coin({
       type_arguments: [APTOS_COIN],
-      arguments: [ORIGIN, parseApt(Number(credits))],
+      arguments: [ORIGIN, parseApt(available)],
     })
 
     const tx = await aptos.waitForTransaction({
@@ -48,7 +49,7 @@ export function Redeem() {
         <AlertDialogHeader>
           <AlertDialogTitle>Redeem Credits</AlertDialogTitle>
           <AlertDialogDescription>
-            You can redeem {credits} APT from prize pool ({pool} APT available).
+            You can redeem {available} APT from prize pool ({pool} APT available).
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
