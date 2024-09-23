@@ -47,7 +47,7 @@ export const AmountInput = ({
             className='w-[28px] ring-1 px-1 py-[2px] rounded-lg ring-muted-foreground/50'
             onClick={() => addPercentAmount(100)}
           >
-            2
+            2×
           </button>
         </div>
         <div className='flex gap-2 items-center'>

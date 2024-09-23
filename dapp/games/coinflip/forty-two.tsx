@@ -84,9 +84,7 @@ export function FortyTwo() {
           <div className="grid flex-1 auto-rows-min gap-0.5">
             <div className="text-xs text-muted-foreground">Multiplier</div>
             <div className="flex items-baseline gap-1 text-xl font-bold tabular-nums leading-none">
-              <span className="text-sm font-normal text-muted-foreground">
-                  x
-              </span>
+              <span className="text-sm font-normal text-muted-foreground">×</span>
                 1.98
             </div>
           </div>

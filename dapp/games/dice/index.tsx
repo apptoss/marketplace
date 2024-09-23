@@ -110,7 +110,7 @@ export function Dice() {
             <p className="text-base mb-1">Multiplier</p>
             <div className="flex flex-row border-1 rounded-md justify-between border-[1px] divide-solid border-slate-300 px-3 py-2">
               <p className="text-base">{payout}</p>
-              <span>x</span>
+              <span>×</span>
             </div>
           </div>
           <div className="flex flex-col flex-1 mr-3">
