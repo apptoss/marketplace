@@ -30,13 +30,21 @@ export function FortyTwo() {
       return
     }
 
-    const response = await client.useABI(ABI).place_coin({
+    const hash = await client.useABI(ABI).place_coin({
       type_arguments: [APTOS_COIN],
       arguments: [ORIGIN, outcome, parseApt(amount)],
+    }).then((response) => response.hash).catch((e) => {
+      if ((e as string).includes("Transaction not found")) {
+        const hashMatch = (e as string).match(/transactions\/by_hash\/(0x[0-9a-fA-F]+)/)
+        if (!hashMatch) throw e
+        console.warn("(workaround) Transaction not found", hashMatch[1])
+        return hashMatch[1]
+      }
+      throw e
     })
 
     const tx = await aptos.waitForTransaction({
-      transactionHash: response.hash,
+      transactionHash: hash,
     }).then((tx) => tx as UserTransactionResponse)
     const data = tx.events.find((e) => e.type.endsWith("::coinflip::CoinFlip"))?.data
     console.log("CoinFlip", data)
