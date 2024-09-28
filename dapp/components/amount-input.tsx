@@ -1,4 +1,3 @@
-import aptIcon from "@/assets/apt.svg"
 import { Input, InputProps } from "@/components/ui/input"
 import { useBalance } from "@/hooks/use-balance"
 
@@ -8,6 +7,10 @@ export const AmountInput = ({
   ...props
 }: InputProps & { amount?: number; onChangeAmount: (amount: number) => void }) => {
   const { balance } = useBalance()
+  const displayAmount = (() => {
+    if (amount === undefined || isNaN(amount)) return ''
+    return amount
+  })()
 
   const addPercentAmount = (percent: number) => {
     const am = (amount ?? 0) * (1 + percent / 100)
@@ -22,15 +25,14 @@ export const AmountInput = ({
           placeholder='0'
           type='number'
           className='border-none w-[80%] px-0 font-semibold text-4xl shadow-none focus-visible:ring-transparent'
-          value={amount ?? ''}
+          value={displayAmount}
           onChange={(e) => {
-            const amount = e.target.valueAsNumber
-            onChangeAmount(amount)
+            onChangeAmount(e.target.valueAsNumber)
           }}
           {...props}
         />
         <div className='font-medium flex gap-1 items-center'>
-          <img src={aptIcon} className='size-5'/>
+          <img src='/apt.svg' className='size-5'/>
           APT
         </div>
       </div>
