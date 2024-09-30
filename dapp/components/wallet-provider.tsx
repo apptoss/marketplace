@@ -11,6 +11,7 @@ export function WalletProvider({ children }: PropsWithChildren) {
       autoConnect={true}
       dappConfig={{ network: NETWORK }}
       onError={(error) => {
+        if ((error as string).includes("Transaction not found")) return
         toast({
           variant: "destructive",
           title: "Error",
