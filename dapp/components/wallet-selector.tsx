@@ -89,6 +89,8 @@ export function ConnectWalletDialog({ close }: ConnectWalletDialogProps) {
   const { aptosConnectWallets, availableWallets, installableWallets } = groupAndSortWallets(wallets)
 
   const hasAptosConnectWallets = !!aptosConnectWallets.length
+  const preferPetra = installableWallets.find((wallet) => wallet.name === "Petra")
+  const filteredInstallableWallets = installableWallets.filter((wallet) => wallet.name !== "Petra")
 
   return (
     <DialogContent className="max-h-screen overflow-auto">
@@ -137,7 +139,10 @@ export function ConnectWalletDialog({ close }: ConnectWalletDialogProps) {
           {availableWallets.map((wallet) => (
             <WalletRow key={wallet.name} wallet={wallet} onConnect={close} />
           ))}
-          {!!installableWallets.length && (
+          {!!preferPetra && (
+            <WalletRow key={preferPetra.name} wallet={preferPetra} onConnect={close} />
+          )}
+          {!!filteredInstallableWallets.length && (
             <Collapsible className="flex flex-col gap-3">
               <CollapsibleTrigger asChild>
                 <Button size="sm" variant="ghost" className="gap-2">
@@ -145,7 +150,7 @@ export function ConnectWalletDialog({ close }: ConnectWalletDialogProps) {
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="flex flex-col gap-3">
-                {installableWallets.map((wallet) => (
+                {filteredInstallableWallets.map((wallet) => (
                   <WalletRow key={wallet.name} wallet={wallet} onConnect={close} />
                 ))}
               </CollapsibleContent>
