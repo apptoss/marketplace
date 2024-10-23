@@ -18,7 +18,7 @@ import { useState } from "react"
 export function Limbo() {
   const {connected, client } = useWalletClient()
   const [crashPoint, setCrashPoint] = useState("0")
-  const [amount, setAmount] = useState<number | undefined>(undefined)
+  const [amount, setAmount] = useState<number| string | undefined>(undefined)
   const [targetMultiplier, setTargetMultiplier] = useState<number>(1.98)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -35,7 +35,7 @@ export function Limbo() {
 
     const hash = await client.useABI(ABI).place_coin({
       type_arguments: [APTOS_COIN],
-      arguments: [ORIGIN, Math.floor(targetMultiplier * 100), parseApt(amount)],
+      arguments: [ORIGIN, Math.floor(targetMultiplier * 100), parseApt(Number(amount))],
     }).then((response) => response.hash).catch((e) => {
       if ((e as string).includes("Transaction not found")) {
         const hashMatch = (e as string).match(/transactions\/by_hash\/(0x[0-9a-fA-F]+)/)

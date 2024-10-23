@@ -16,7 +16,7 @@ import { useState } from "react"
 export function FortyTwo() {
   const {connected, client } = useWalletClient()
   const [series, setSeries] = useState(0)
-  const [amount, setAmount] = useState<number | undefined>(undefined)
+  const [amount, setAmount] = useState<number| string | undefined>(undefined)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   async function place(outcome: boolean) {
@@ -32,7 +32,7 @@ export function FortyTwo() {
 
     const hash = await client.useABI(ABI).place_coin({
       type_arguments: [APTOS_COIN],
-      arguments: [ORIGIN, outcome, parseApt(amount)],
+      arguments: [ORIGIN, outcome, parseApt(Number(amount))],
     }).then((response) => response.hash).catch((e) => {
       if ((e as string).includes("Transaction not found")) {
         const hashMatch = (e as string).match(/transactions\/by_hash\/(0x[0-9a-fA-F]+)/)

@@ -30,7 +30,7 @@ export function Dice() {
   const [winChange, setWinChange] = useState(defaultWinChange)
   const [isRollOver, setIsRollOver] = useState(false)
   const [diceResult, setDiceResult] = useState<number | null>(null)
-  const [amount, setAmount] = useState<number | undefined>(undefined)
+  const [amount, setAmount] = useState<number| string | undefined>(undefined)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const rnn = (num: number, decimal: number) => {
@@ -72,7 +72,7 @@ export function Dice() {
 
     const hash = await client.useABI(ABI).place_coin({
       type_arguments: [APTOS_COIN],
-      arguments: [ORIGIN, isRollOver, expectNumber * 100, parseApt(amount)],
+      arguments: [ORIGIN, isRollOver, expectNumber * 100, parseApt(Number(amount))],
     }).then((response) => response.hash).catch((e) => {
       if ((e as string).includes("Transaction not found")) {
         const hashMatch = (e as string).match(/transactions\/by_hash\/(0x[0-9a-fA-F]+)/)
