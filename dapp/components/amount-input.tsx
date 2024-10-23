@@ -24,6 +24,8 @@ export const AmountInput = ({
           id='amount'
           placeholder='0'
           type='number'
+          pattern="[0-9]*"
+          inputMode="decimal"
           className='border-none w-[80%] px-0 font-semibold text-4xl shadow-none focus-visible:ring-transparent'
           value={displayAmount}
           onChange={(e) => {
