@@ -1,11 +1,23 @@
-import { StrictMode } from "react"
-import { createRoot } from "react-dom/client"
-import "./index.css"
 import { Network } from "@aptos-labs/ts-sdk"
 import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react"
-import { ModeToggle } from "@/components/mode-toggle"
+import { createRouter, RouterProvider } from "@tanstack/react-router"
+import { StrictMode } from "react"
+import { createRoot } from "react-dom/client"
 import { ThemeProvider } from "@/components/theme-provider"
-import { WalletSelector } from "@/components/WalletSelector"
+import "./index.css"
+
+// Import the generated route tree
+import { routeTree } from "./routeTree.gen"
+
+// Create a new router instance
+const router = createRouter({ routeTree })
+
+// Register the router instance for type safety
+declare module "@tanstack/react-router" {
+	interface Register {
+		router: typeof router
+	}
+}
 
 const rootElement = document.getElementById("root")
 if (!rootElement) throw new Error("Root element not found")
@@ -15,18 +27,12 @@ createRoot(rootElement).render(
 		<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
 			<AptosWalletAdapterProvider
 				autoConnect={true}
-				dappConfig={{ network: Network.TESTNET }}
+				dappConfig={{ network: Network.LOCAL }}
 				onError={(error) => {
 					console.log("error", error)
 				}}
 			>
-				<div className="flex items-center justify-between p-4">
-					<h1>A Skin Builder Base</h1>
-					<div className="flex items-center gap-2">
-						<WalletSelector />
-						<ModeToggle />
-					</div>
-				</div>
+				<RouterProvider router={router} />
 			</AptosWalletAdapterProvider>
 		</ThemeProvider>
 	</StrictMode>,
