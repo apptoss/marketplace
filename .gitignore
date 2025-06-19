@@ -22,12 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Aptos
-.aptos
-**/move/build
-contract_address.txt
-
-# Environments
-.env*
-!.env.example
