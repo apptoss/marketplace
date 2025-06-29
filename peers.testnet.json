@@ -1,0 +1,12 @@
+{
+	"0xd6ffb2cbfe4e73e50d98fb947a732e57490b3e4ad26762520d0433c1079cb3da": {
+		"symbol": "APT",
+		"decimals": 8,
+		"metadata": "0x000000000000000000000000000000000000000000000000000000000000000a"
+	},
+	"0x35298903d95fd058c895941567e52dae54d55abff2fa37862fdb897c39d8b77d": {
+		"symbol": "USDC",
+		"decimals": 6,
+		"metadata": "0x69091fbab5f7d635ee7ac5098cf0c1efbe31d68fec0f2cd565e8d168daf52832"
+	}
+}

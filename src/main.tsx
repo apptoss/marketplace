@@ -1,10 +1,11 @@
-import { Network } from "@aptos-labs/ts-sdk"
 import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react"
 import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { ThemeProvider } from "@/components/theme-provider"
+import { getAptosNetwork } from "@/core/bearium"
 import "./index.css"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen"
@@ -19,6 +20,9 @@ declare module "@tanstack/react-router" {
 	}
 }
 
+// Remote state management
+const queryClient = new QueryClient()
+
 const rootElement = document.getElementById("root")
 if (!rootElement) throw new Error("Root element not found")
 
@@ -27,12 +31,14 @@ createRoot(rootElement).render(
 		<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
 			<AptosWalletAdapterProvider
 				autoConnect={true}
-				dappConfig={{ network: Network.LOCAL }}
+				dappConfig={{ network: getAptosNetwork() }}
 				onError={(error) => {
 					console.log("error", error)
 				}}
 			>
-				<RouterProvider router={router} />
+				<QueryClientProvider client={queryClient}>
+					<RouterProvider router={router} />
+				</QueryClientProvider>
 			</AptosWalletAdapterProvider>
 		</ThemeProvider>
 	</StrictMode>,
