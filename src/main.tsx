@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { getAptosNetwork } from "@/core/bearium"
 import "./index.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { Toaster } from "sonner"
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen"
@@ -40,6 +41,7 @@ createRoot(rootElement).render(
 					<RouterProvider router={router} />
 				</QueryClientProvider>
 			</AptosWalletAdapterProvider>
+			<Toaster />
 		</ThemeProvider>
 	</StrictMode>,
 )
