@@ -38,10 +38,9 @@ export function PeerCard({ peerId }: PeerCardProps) {
 			<CardHeader>
 				<div className="flex items-center justify-between">
 					<CardTitle className="flex items-center gap-2">
-						<span>Peer</span>
-						<Badge variant="secondary" className="font-mono text-sm">
-							{peerId.slice(0, 8)}...{peerId.slice(-8)}
-						</Badge>
+						<span>
+							Peer {peerId.slice(0, 8)}...{peerId.slice(-6)}
+						</span>
 					</CardTitle>
 					<Badge variant="outline">Asset: {asset.symbol}</Badge>
 				</div>

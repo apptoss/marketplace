@@ -20,7 +20,7 @@ export function PeerSelector({
 
 	return (
 		<Select value={selectedPeerId} onValueChange={onPeerChange}>
-			<SelectTrigger className="w-[200px]">
+			<SelectTrigger className="w-[140px] sm:w-[180px]">
 				<SelectValue placeholder="Choose an asset" />
 			</SelectTrigger>
 			<SelectContent>
