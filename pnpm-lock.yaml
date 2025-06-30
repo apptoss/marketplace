@@ -71,6 +71,9 @@ importers:
       tailwindcss:
         specifier: ^4.1.10
         version: 4.1.10
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
     devDependencies:
       '@biomejs/biome':
         specifier: 2.0.0
