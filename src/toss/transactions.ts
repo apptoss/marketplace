@@ -9,7 +9,7 @@ import {
 } from "@aptos-labs/ts-sdk"
 import type { QueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { DefaultSkinId, MarketplaceId, PackageId } from "@/core/bearium"
+import { MarketplaceId, PackageId } from "@/core/bearium"
 import { formatAmount } from "@/lib/units"
 
 export interface TossGameResult {
@@ -48,8 +48,9 @@ export async function buildTossTransaction(
 	const serializer = new Serializer()
 	serializer.serialize(AccountAddress.fromString(MarketplaceId))
 
-	// Placeholder for skin id which will be a commit hash when merged
-	serializer.serializeBytes(Hex.fromHexString(DefaultSkinId).toUint8Array())
+	// Skin from pull #2
+	const skinId = "f1f264a08a4a78599a556a0b8ba79dddc23d8b4e"
+	serializer.serializeBytes(Hex.fromHexString(skinId).toUint8Array())
 
 	const extra = serializer.toUint8Array()
 
