@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router"
 import { DecimalInput } from "@/components/DecimalInput"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,6 +19,7 @@ interface TossProps {
 
 export function Toss({ peerId }: TossProps) {
 	const asset = peers[peerId]
+	const navigate = useNavigate()
 
 	const {
 		amount,
@@ -32,7 +34,7 @@ export function Toss({ peerId }: TossProps) {
 		assetToUse,
 		handleAmountChange,
 		executeToss,
-	} = useToss({ peerId, asset })
+	} = useToss({ peerId, asset, navigate })
 
 	return (
 		<Card className="w-full max-w-md mx-auto">

@@ -9,8 +9,8 @@ import {
 	executeTossTransaction,
 	handleTossResult,
 	invalidateTossBalances,
-	type TossTransactionParams,
 } from "./transactions"
+import type { TossTransactionParams } from "./types"
 
 export interface UseTossProps {
 	peerId: string
@@ -19,9 +19,10 @@ export interface UseTossProps {
 		decimals: number
 		metadata: string
 	}
+	navigate: (options: { to: string }) => void
 }
 
-export function useToss({ peerId, asset }: UseTossProps) {
+export function useToss({ peerId, asset, navigate }: UseTossProps) {
 	const aptos = useAptosClient()
 	const { account, signTransaction } = useWallet()
 	const queryClient = useQueryClient()
@@ -128,6 +129,7 @@ export function useToss({ peerId, asset }: UseTossProps) {
 				aptos,
 				transaction,
 				senderAuthenticator,
+				queryClient,
 			)
 
 			// Handle result and check for transaction-level errors
@@ -137,7 +139,7 @@ export function useToss({ peerId, asset }: UseTossProps) {
 			}
 
 			// Handle successful result
-			handleTossResult(result, asset.symbol, asset.decimals)
+			handleTossResult(result, asset.symbol, asset.decimals, navigate)
 
 			// Invalidate balances after successful transaction
 			await invalidateTossBalances(
