@@ -11,32 +11,8 @@ import type { QueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { MarketplaceId, PackageId } from "@/core/bearium"
 import { formatAmount } from "@/lib/units"
-
-export interface TossGameResult {
-	result: boolean
-	expect: boolean
-	face_bps: number
-	edge_bps: number
-	profit: string
-	charge: string
-	credit: string
-	peer_id: string
-	player: string
-}
-
-export interface TossTransactionParams {
-	peerId: string
-	assetToUse: bigint
-	creditsToUse: bigint
-	outcome: boolean
-	senderAddress: string
-}
-
-export interface TossExecutionResult {
-	success: boolean
-	error?: string
-	gameResult?: TossGameResult
-}
+import { findTossEvent } from "./events"
+import type { TossExecutionResult, TossTransactionParams } from "./types"
 
 /**
  * Builds a toss transaction with the required parameters
@@ -77,6 +53,7 @@ export async function executeTossTransaction(
 	aptos: Aptos,
 	transaction: SimpleTransaction,
 	senderAuthenticator: AccountAuthenticator,
+	queryClient: QueryClient,
 ): Promise<TossExecutionResult> {
 	try {
 		const committedTransaction = await aptos.transaction.submit.simple({
@@ -90,15 +67,20 @@ export async function executeTossTransaction(
 
 		console.log("Transaction:", executedTransaction)
 
+		// Store the transaction in React Query cache
+		queryClient.setQueryData(
+			["transaction", committedTransaction.hash],
+			executedTransaction,
+		)
+
 		if (executedTransaction.success) {
 			const effects = executedTransaction as UserTransactionResponse
-			const gameEvent = effects.events.find((e) =>
-				e.type.endsWith("::toss::Toss"),
-			)?.data as TossGameResult | undefined
+			const gameEvent = findTossEvent(effects)
 
 			return {
 				success: true,
 				gameResult: gameEvent,
+				transactionHash: committedTransaction.hash,
 			}
 		} else {
 			return {
@@ -122,6 +104,7 @@ export function handleTossResult(
 	result: TossExecutionResult,
 	assetSymbol: string,
 	assetDecimals: number,
+	navigate: (options: { to: string }) => void,
 ) {
 	if (!result.success) {
 		toast.error("Transaction failed", {
@@ -150,10 +133,39 @@ export function handleTossResult(
 			description: won
 				? `Profit: ${profitFormatted} credits`
 				: `Lost: ${chargeFormatted} ${assetSymbol} and ${creditFormatted} credits`,
+			action: result.transactionHash
+				? {
+						label: "View",
+						onClick: () => {
+							navigate({ to: `/txn/${result.transactionHash}` })
+						},
+					}
+				: undefined,
 		})
 	} else {
-		toast.success("Transaction successful")
+		toast.success("Transaction successful", {
+			action: result.transactionHash
+				? {
+						label: "View",
+						onClick: () => {
+							navigate({ to: `/txn/${result.transactionHash}` })
+						},
+					}
+				: undefined,
+		})
 	}
+}
+
+/**
+ * Manually stores a transaction in the React Query cache
+ * Useful for pre-populating the cache with known transactions
+ */
+export function storeTransactionInCache(
+	queryClient: QueryClient,
+	transactionHash: string,
+	transaction: UserTransactionResponse,
+) {
+	queryClient.setQueryData(["transaction", transactionHash], transaction)
 }
 
 /**
