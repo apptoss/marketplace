@@ -14,3 +14,13 @@ export function getAptosNetwork(): Network {
 function isNetwork(value: string): value is Network {
 	return Object.values(Network).includes(value as Network)
 }
+
+/**
+ * Gets the Aptos explorer URL for a transaction hash based on the current network
+ * @param transactionHash The transaction hash to view
+ * @returns The full URL to view the transaction on the appropriate explorer
+ */
+export function getExplorerUrl(transactionHash: string): string {
+	const network = getAptosNetwork()
+	return `https://explorer.aptoslabs.com/txn/${transactionHash}?network=${network}`
+}
