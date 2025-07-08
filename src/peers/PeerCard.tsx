@@ -1,7 +1,10 @@
 import { useWallet } from "@aptos-labs/wallet-adapter-react"
+import { ExternalLink } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatAmount } from "@/lib/units"
+import { getObjectExplorerUrl } from "../core/bearium"
 import { peers } from "../core/peers"
 import { useBalance } from "./useBalance"
 
@@ -16,6 +19,7 @@ interface PeerCardProps {
 export function PeerCard({ peerId }: PeerCardProps) {
 	const asset = peers[peerId]
 	const treasury = useBalance(asset.metadata, peerId)
+	const objectExplorerUrl = getObjectExplorerUrl(peerId)
 
 	const { connected, account } = useWallet()
 	const userAlpha = useBalance(peerId, account?.address.toString())
@@ -41,6 +45,18 @@ export function PeerCard({ peerId }: PeerCardProps) {
 						<span>
 							Peer {peerId.slice(0, 8)}...{peerId.slice(-6)}
 						</span>
+						{objectExplorerUrl && (
+							<Button variant="ghost" size="sm" asChild className="h-auto p-1">
+								<a
+									href={objectExplorerUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									title="View on Aptos Explorer"
+								>
+									<ExternalLink className="h-4 w-4" />
+								</a>
+							</Button>
+						)}
 					</CardTitle>
 					<Badge variant="outline">Asset: {asset.symbol}</Badge>
 				</div>

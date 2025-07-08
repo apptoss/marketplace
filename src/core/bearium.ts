@@ -24,3 +24,13 @@ export function getExplorerUrl(transactionHash: string): string {
 	const network = getAptosNetwork()
 	return `https://explorer.aptoslabs.com/txn/${transactionHash}?network=${network}`
 }
+
+/**
+ * Gets the Aptos explorer URL for an object based on the current network
+ * @param objectId The object ID to view
+ * @returns The full URL to view the object on the appropriate explorer
+ */
+export function getObjectExplorerUrl(objectId: string): string {
+	const network = getAptosNetwork()
+	return `https://explorer.aptoslabs.com/object/${objectId}?network=${network}`
+}
