@@ -3,6 +3,7 @@
 declare global {
 	interface ImportMetaEnv {
 		readonly VITE_BEARIUM_PACKAGE_ID: string
+		readonly VITE_AGENCY_PACKAGE_ID: string
 		readonly VITE_MARKETPLACE_ID: string
 	}
 

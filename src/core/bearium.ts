@@ -1,6 +1,7 @@
 import { Network } from "@aptos-labs/ts-sdk"
 
 export const PackageId = import.meta.env.VITE_BEARIUM_PACKAGE_ID
+export const AgencyPackageId = import.meta.env.VITE_AGENCY_PACKAGE_ID
 export const MarketplaceId = import.meta.env.VITE_MARKETPLACE_ID
 
 export const DefaultSkinId = "b455fccfc4fbb707e7b4245bb51e9afd38ea57eb"

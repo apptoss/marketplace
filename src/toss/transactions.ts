@@ -9,7 +9,7 @@ import {
 } from "@aptos-labs/ts-sdk"
 import type { QueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { MarketplaceId, PackageId } from "@/core/bearium"
+import { AgencyPackageId, MarketplaceId, PackageId } from "@/core/bearium"
 import { formatAmount } from "@/lib/units"
 import { findTossEvent } from "./events"
 import type { TossExecutionResult, TossTransactionParams } from "./types"
@@ -34,7 +34,7 @@ export async function buildTossTransaction(
 		sender: params.senderAddress,
 		data: {
 			function: `${PackageId}::toss::toss`,
-			typeArguments: [`${PackageId}::marketplace::Origin`],
+			typeArguments: [`${AgencyPackageId}::marketplace::Origin`],
 			functionArguments: [
 				params.peerId,
 				params.assetToUse.toString(),
