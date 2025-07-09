@@ -1,7 +1,7 @@
 import { AccountAddress } from "@aptos-labs/ts-sdk"
 import { useWallet } from "@aptos-labs/wallet-adapter-react"
 import { useCallback, useState } from "react"
-import { MarketplaceId, PackageId } from "@/core/bearium"
+import { AgencyPackageId, MarketplaceId } from "@/core/bearium"
 import { useAptosClient } from "@/hooks/useAptosClient"
 
 export function useBond() {
@@ -44,8 +44,8 @@ export function useBond() {
 				const transaction = await aptos.transaction.build.simple({
 					sender: account.address,
 					data: {
-						function: `${PackageId}::marketplace::bond`,
-						typeArguments: [`${PackageId}::marketplace::Marketplace`],
+						function: `${AgencyPackageId}::marketplace::bond`,
+						typeArguments: [`${AgencyPackageId}::marketplace::Marketplace`],
 						functionArguments: [
 							MarketplaceId,
 							AccountAddress.fromString(trimmedAddress),
