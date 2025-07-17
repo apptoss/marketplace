@@ -25,6 +25,7 @@ export default defineConfig(({ mode }) => {
 		},
 		define: {
 			__APTOS_NETWORK__: JSON.stringify(env.APTOS_NETWORK),
+			__APTOS_API_KEY__: JSON.stringify(env.APTOS_API_KEY),
 			__PEERS__: (() => {
 				const jsonPath = path.resolve(__dirname, `peers.testnet.json`)
 				const data = fs.readFileSync(jsonPath, "utf-8")

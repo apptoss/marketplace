@@ -1,9 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
-import { useAptosClient } from "@/hooks/useAptosClient"
+import { aptos } from "@/core/bearium"
 
 export function useTransaction(transactionHash: string) {
-	const aptos = useAptosClient()
-
 	return useQuery({
 		queryKey: ["transaction", transactionHash],
 		queryFn: () => aptos.getTransactionByHash({ transactionHash }),

@@ -7,6 +7,7 @@ import { WalletSelector } from "@/components/WalletSelector"
 import { peers } from "@/core/peers"
 import { PeerCard } from "@/peers/PeerCard"
 import { ReferralBond } from "@/referral/ReferralBond"
+import { Agents } from "@/session/Agents"
 import { Toss } from "@/toss/Toss"
 
 export const Route = createFileRoute("/")({
@@ -36,6 +37,7 @@ function RouteComponent() {
 			<div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
 				<PeerCard peerId={selectedPeerId} />
 				<Toss peerId={selectedPeerId} />
+				<Agents />
 				<ReferralBond />
 			</div>
 

@@ -1,11 +1,9 @@
 import { AccountAddress } from "@aptos-labs/ts-sdk"
 import { useWallet } from "@aptos-labs/wallet-adapter-react"
 import { useCallback, useState } from "react"
-import { AgencyPackageId, MarketplaceId } from "@/core/bearium"
-import { useAptosClient } from "@/hooks/useAptosClient"
+import { AgencyPackageId, aptos, MarketplaceId } from "@/core/bearium"
 
 export function useBond() {
-	const aptos = useAptosClient()
 	const { account, signTransaction } = useWallet()
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState("")
@@ -78,7 +76,7 @@ export function useBond() {
 				setIsLoading(false)
 			}
 		},
-		[account, aptos, signTransaction],
+		[account, signTransaction],
 	)
 
 	const reset = useCallback(() => {
