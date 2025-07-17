@@ -256,14 +256,14 @@ export function useToss({ peerId, asset, navigate }: UseTossProps) {
 					],
 				}
 
-				toast.promise(
-					(async () => {
+				const optimisticToss = async () => {
+					const uniqueId = crypto.randomUUID()
+					addOptimisticUpdate(uniqueId, assetToUse, creditsToUse)
+					try {
 						const transactionHash = await transactionWorker.push(input)
-						addOptimisticUpdate(transactionHash, assetToUse, creditsToUse)
 						const transaction = await aptos.transaction.waitForTransaction({
 							transactionHash,
 						})
-						removeOptimisticUpdate(transaction.hash)
 						refreshBalances()
 
 						// Parse Toss event for win/loss
@@ -280,12 +280,15 @@ export function useToss({ peerId, asset, navigate }: UseTossProps) {
 
 						handleTossResult(result, asset.symbol, asset.decimals, navigate)
 						return result
-					})(),
-					{
-						loading: "Submitting transaction...",
-						error: (err) => getTransactionErrorMessage(err),
-					},
-				)
+					} finally {
+						removeOptimisticUpdate(uniqueId)
+					}
+				}
+
+				toast.promise(optimisticToss(), {
+					loading: "Submitting transaction...",
+					error: (err) => getTransactionErrorMessage(err),
+				})
 			} else {
 				// Traditional flow
 				// Build transaction
