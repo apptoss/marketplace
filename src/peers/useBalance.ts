@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { useAptosClient } from "@/hooks/useAptosClient"
+import { aptos } from "@/core/bearium"
 
 type JsonResponse = {
 	current_fungible_asset_balances: {
@@ -8,12 +8,19 @@ type JsonResponse = {
 	}[]
 }
 
-export function useBalance(asset: string, owner?: string) {
-	const aptos = useAptosClient()
-
+export function useBalance(
+	asset: string,
+	owner?: string,
+	options?: {
+		staleTime?: number
+		refetchInterval?: number | false
+	},
+) {
 	return useQuery({
 		queryKey: ["balance", owner, asset],
 		enabled: !!owner,
+		staleTime: options?.staleTime ?? 2000, // 2 seconds default
+		refetchInterval: options?.refetchInterval ?? 30000, // 3 seconds default
 		queryFn: async () => {
 			const response = await aptos.queryIndexer<JsonResponse>({
 				query: {

@@ -68,7 +68,7 @@ export function Toss({ peerId }: TossProps) {
 							<div>
 								<span className="font-mono">
 									{formatAmount(
-										(userAsset.data || 0n) + (userAlpha.data || 0n),
+										(userAsset || 0n) + (userAlpha || 0n),
 										asset.decimals,
 									)}
 								</span>{" "}
@@ -76,13 +76,13 @@ export function Toss({ peerId }: TossProps) {
 							</div>
 							<div className="text-muted-foreground">
 								<span className="font-mono">
-									{formatAmount(userAsset.data || 0n, asset.decimals)}
+									{formatAmount(userAsset || 0n, asset.decimals)}
 								</span>{" "}
 								{asset.symbol}
 							</div>
 							<div className="text-muted-foreground">
 								<span className="font-mono">
-									{formatAmount(userAlpha.data || 0n, asset.decimals)}
+									{formatAmount(userAlpha || 0n, asset.decimals)}
 								</span>{" "}
 								{asset.symbol}
 							</div>

@@ -5,6 +5,8 @@ declare global {
 		readonly VITE_BEARIUM_PACKAGE_ID: string
 		readonly VITE_AGENCY_PACKAGE_ID: string
 		readonly VITE_MARKETPLACE_ID: string
+
+		readonly VITE_SESSION_PACKAGE_ID: string
 	}
 
 	interface ImportMeta {
@@ -14,6 +16,7 @@ declare global {
 
 // Declare the build-time constants injected by Vite
 declare const __APTOS_NETWORK__: string
+declare const __APTOS_API_KEY__: string
 declare const __PEERS__: Record<
 	string,
 	{ symbol: string; decimals: number; metadata: string }

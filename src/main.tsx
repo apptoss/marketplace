@@ -41,7 +41,7 @@ createRoot(rootElement).render(
 					<RouterProvider router={router} />
 				</QueryClientProvider>
 			</AptosWalletAdapterProvider>
-			<Toaster />
+			<Toaster visibleToasts={10} />
 		</ThemeProvider>
 	</StrictMode>,
 )

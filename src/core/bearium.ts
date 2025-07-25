@@ -1,8 +1,15 @@
-import { Network } from "@aptos-labs/ts-sdk"
+import {
+	Aptos,
+	AptosConfig,
+	type ClientConfig,
+	Network,
+} from "@aptos-labs/ts-sdk"
 
 export const PackageId = import.meta.env.VITE_BEARIUM_PACKAGE_ID
 export const AgencyPackageId = import.meta.env.VITE_AGENCY_PACKAGE_ID
 export const MarketplaceId = import.meta.env.VITE_MARKETPLACE_ID
+
+export const SessionPackageId = import.meta.env.VITE_SESSION_PACKAGE_ID
 
 export const DefaultSkinId = "b455fccfc4fbb707e7b4245bb51e9afd38ea57eb"
 
@@ -15,6 +22,16 @@ export function getAptosNetwork(): Network {
 function isNetwork(value: string): value is Network {
 	return Object.values(Network).includes(value as Network)
 }
+
+// Set clientConfig to undefined if __APTOS_API_KEY__ is empty
+const clientConfig: ClientConfig | undefined = __APTOS_API_KEY__
+	? { API_KEY: __APTOS_API_KEY__ }
+	: undefined
+export const aptosConfig = new AptosConfig({
+	network: getAptosNetwork(),
+	clientConfig,
+})
+export const aptos = new Aptos(aptosConfig)
 
 /**
  * Gets the Aptos explorer URL for a transaction hash based on the current network
